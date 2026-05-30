@@ -917,6 +917,10 @@
             loadTasks();
             checkActiveCourse();
             setInterval(checkActiveCourse, 60000);
+            // Cargar voces disponibles (opcional)
+            if (window.speechSynthesis) {
+                window.speechSynthesis.getVoices();
+            }
         });
 
         function setupTime() {
@@ -936,6 +940,34 @@
                     pupil.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
                 });
             });
+        }
+
+        // ============================================================
+        // SINTESIS DE VOZ (Web Speech API)
+        // ============================================================
+        function speakText(text) {
+            if (!window.speechSynthesis) {
+                console.log('SpeechSynthesis no soportado');
+                return;
+            }
+            
+            // Cancelar cualquier voz en curso
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES';
+            utterance.rate = 0.9;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            
+            // Intentar usar voz en español
+            const voices = window.speechSynthesis.getVoices();
+            const spanishVoice = voices.find(voice => voice.lang.includes('es'));
+            if (spanishVoice) {
+                utterance.voice = spanishVoice;
+            }
+            
+            window.speechSynthesis.speak(utterance);
         }
 
         // ============================================================
@@ -1124,6 +1156,7 @@
         function handleWebSocketMessage(data) {
             if (data.type === 'response') {
                 addMessage(data.text, 'bot');
+                speakText(data.text);  // <--- AGREGAR ESTA LÍNEA
                 animateMouth(true);
                 animateSoundWave(true);
                 setTimeout(() => {
