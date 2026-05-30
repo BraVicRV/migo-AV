@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: aura-amigo-virtual
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python web_app.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.0
+    plan: free

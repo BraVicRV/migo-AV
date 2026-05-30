@@ -1,0 +1,9 @@
+__pycache__/
+config/user_profile.json
+config/schedule.json
+data/
+*.pyc
+.env
+.DS_Store
+*.mp3
+*.log
