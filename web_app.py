@@ -65,6 +65,21 @@ def get_aura(user_id: str):
             tasks_instance = aura_instances[user_id].tasks
     return aura_instances[user_id]
 
+aura_instances_with_key = {}
+
+def get_aura_with_api_key(user_id: str, api_key: str):
+    """Crea o recupera una instancia de AURA con una API key especifica"""
+    global scheduler_instance, tasks_instance
+    if user_id not in aura_instances_with_key:
+        aura = AmigoVirtual(user_id=user_id)
+        # Configurar la API key de Groq para este usuario
+        if hasattr(aura.brain, 'groq') and hasattr(aura.brain.groq, 'set_api_key'):
+            aura.brain.groq.set_api_key(api_key)
+        aura_instances_with_key[user_id] = aura
+        scheduler_instance = aura.scheduler
+        tasks_instance = aura.tasks
+    return aura_instances_with_key[user_id]
+
 # HTML embebido con el nuevo diseño de horario semanal
 HTML_PAGE = """
 <!DOCTYPE html>
@@ -1510,22 +1525,47 @@ async def websocket_endpoint(websocket: WebSocket):
     global scheduler_instance, tasks_instance
     await manager.connect(websocket)
     user_id = f"web_{id(websocket)}"
+    user_api_key = None
+    aura = None
     
     try:
-        aura = get_aura(user_id)
-        scheduler_instance = aura.scheduler
-        tasks_instance = aura.tasks
-        
-        await manager.send_message({
-            "type": "system",
-            "message": f"Hola {aura.user_name}! Soy {aura.name}. En que puedo ayudarte?"
-        }, websocket)
-        
         while True:
             data = await websocket.receive_json()
             msg_type = data.get("type", "text")
             
+            # ========== RECIBIR API KEY DEL USUARIO ==========
+            if msg_type == "config":
+                user_api_key = data.get("api_key")
+                if user_api_key:
+                    # Crear instancia con la API key del usuario
+                    aura = get_aura_with_api_key(user_id, user_api_key)
+                    scheduler_instance = aura.scheduler
+                    tasks_instance = aura.tasks
+                    
+                    await manager.send_message({
+                        "type": "system",
+                        "message": f"Hola {aura.user_name}! Soy {aura.name}. API key configurada correctamente."
+                    }, websocket)
+                else:
+                    # Sin API key, usar modo sin IA
+                    aura = get_aura(user_id)
+                    scheduler_instance = aura.scheduler
+                    tasks_instance = aura.tasks
+                    
+                    await manager.send_message({
+                        "type": "system",
+                        "message": f"Hola {aura.user_name}! Soy {aura.name}. No hay API key, las respuestas seran limitadas."
+                    }, websocket)
+                continue
+            
+            # ========== MENSAJE DE TEXTO NORMAL ==========
             if msg_type == "text":
+                # Si aún no hay aura, crear una por defecto
+                if aura is None:
+                    aura = get_aura(user_id)
+                    scheduler_instance = aura.scheduler
+                    tasks_instance = aura.tasks
+                
                 user_text = data.get("text", "")
                 
                 await manager.send_message({

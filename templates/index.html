@@ -737,7 +737,22 @@
 </head>
 <body>
     <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-
+    <!-- Modal para API key de Groq -->
+    <div id="apiKeyModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <h3>Configuracion de Groq</h3>
+            <p>Para usar AURA necesitas tu propia API key de Groq (es gratis)</p>
+            <p style="font-size: 12px; margin-bottom: 10px;">
+                <a href="https://console.groq.com" target="_blank" style="color: #667eea;">Obtener API key →</a>
+            </p>
+            <input type="password" id="groqApiKeyInput" placeholder="gsk_...">
+            <div class="modal-buttons">
+                <button class="btn-save" onclick="saveGroqApiKey()">Guardar</button>
+                <button class="btn-cancel" onclick="continueWithoutApi()">Continuar sin IA</button>
+            </div>
+            <p id="apiKeyError" style="color: #ef4444; font-size: 12px; margin-top: 10px;"></p>
+        </div>
+    </div>    
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
@@ -910,6 +925,7 @@
 
         // Inicializar
         document.addEventListener('DOMContentLoaded', () => {
+            checkGroqApiKey();  // <--- AGREGAR ESTA LÍNEA
             connectWebSocket();
             setupTime();
             setupEyesFollow();
@@ -940,6 +956,37 @@
                     pupil.style.transform = `translate(calc(-50% + ${moveX}px), calc(-50% + ${moveY}px))`;
                 });
             });
+        }
+
+        function checkGroqApiKey() {
+            const apiKey = localStorage.getItem('groq_api_key');
+            if (!apiKey) {
+                document.getElementById('apiKeyModal').style.display = 'flex';
+                return false;
+            }
+            return true;
+        }
+
+        function saveGroqApiKey() {
+            const apiKey = document.getElementById('groqApiKeyInput').value.trim();
+            
+            if (!apiKey.startsWith('gsk_')) {
+                document.getElementById('apiKeyError').textContent = 'API key invalida. Debe empezar con "gsk_"';
+                return;
+            }
+            
+            localStorage.setItem('groq_api_key', apiKey);
+            document.getElementById('apiKeyModal').style.display = 'none';
+            
+            // Reconectar WebSocket con la nueva API key
+            if (ws) ws.close();
+            connectWebSocket();
+        }
+
+        function continueWithoutApi() {
+            localStorage.removeItem('groq_api_key');
+            document.getElementById('apiKeyModal').style.display = 'none';
+            connectWebSocket();
         }
 
         // ============================================================
@@ -1139,6 +1186,11 @@
             ws.onopen = () => {
                 document.getElementById('statusText').textContent = 'Conectado';
                 document.getElementById('statusDot').style.background = '#4ade80';
+                // Enviar API key
+                const apiKey = localStorage.getItem('groq_api_key');
+                if (apiKey) {
+                    ws.send(JSON.stringify({ type: 'config', api_key: apiKey }));
+                }
             };
 
             ws.onmessage = (event) => {
