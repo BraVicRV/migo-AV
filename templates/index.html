@@ -336,7 +336,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.9);
+            background: rgba(0,0,0,0.95);
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
@@ -356,6 +356,10 @@
             color: white;
             margin-bottom: 15px;
             font-size: 18px;
+        }
+
+        .modal-content p {
+            color: rgba(255,255,255,0.7);
         }
 
         .modal-content select, 
@@ -737,8 +741,9 @@
 </head>
 <body>
     <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-    <!-- Modal para API key de Groq -->
-    <div id="apiKeyModal" class="modal" style="display: none;">
+    
+    <!-- Modal para API key de Groq - VISIBLE POR DEFECTO -->
+    <div id="apiKeyModal" class="modal" style="display: flex;">
         <div class="modal-content">
             <h3>Configuracion de Groq</h3>
             <p>Para usar AURA necesitas tu propia API key de Groq (es gratis)</p>
@@ -753,6 +758,7 @@
             <p id="apiKeyError" style="color: #ef4444; font-size: 12px; margin-top: 10px;"></p>
         </div>
     </div>    
+    
     <div class="app-container">
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
@@ -925,7 +931,6 @@
 
         // Inicializar
         document.addEventListener('DOMContentLoaded', () => {
-            checkGroqApiKey();  // <--- AGREGAR ESTA LÍNEA
             connectWebSocket();
             setupTime();
             setupEyesFollow();
@@ -933,7 +938,6 @@
             loadTasks();
             checkActiveCourse();
             setInterval(checkActiveCourse, 60000);
-            // Cargar voces disponibles (opcional)
             if (window.speechSynthesis) {
                 window.speechSynthesis.getVoices();
             }
@@ -958,15 +962,6 @@
             });
         }
 
-        function checkGroqApiKey() {
-            const apiKey = localStorage.getItem('groq_api_key');
-            if (!apiKey) {
-                document.getElementById('apiKeyModal').style.display = 'flex';
-                return false;
-            }
-            return true;
-        }
-
         function saveGroqApiKey() {
             const apiKey = document.getElementById('groqApiKeyInput').value.trim();
             
@@ -978,9 +973,11 @@
             localStorage.setItem('groq_api_key', apiKey);
             document.getElementById('apiKeyModal').style.display = 'none';
             
-            // Reconectar WebSocket con la nueva API key
-            if (ws) ws.close();
-            connectWebSocket();
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({ type: 'config', api_key: apiKey }));
+            } else {
+                connectWebSocket();
+            }
         }
 
         function continueWithoutApi() {
@@ -998,7 +995,6 @@
                 return;
             }
             
-            // Cancelar cualquier voz en curso
             window.speechSynthesis.cancel();
             
             const utterance = new SpeechSynthesisUtterance(text);
@@ -1007,7 +1003,6 @@
             utterance.pitch = 1.0;
             utterance.volume = 1.0;
             
-            // Intentar usar voz en español
             const voices = window.speechSynthesis.getVoices();
             const spanishVoice = voices.find(voice => voice.lang.includes('es'));
             if (spanishVoice) {
@@ -1186,7 +1181,6 @@
             ws.onopen = () => {
                 document.getElementById('statusText').textContent = 'Conectado';
                 document.getElementById('statusDot').style.background = '#4ade80';
-                // Enviar API key
                 const apiKey = localStorage.getItem('groq_api_key');
                 if (apiKey) {
                     ws.send(JSON.stringify({ type: 'config', api_key: apiKey }));
@@ -1208,7 +1202,7 @@
         function handleWebSocketMessage(data) {
             if (data.type === 'response') {
                 addMessage(data.text, 'bot');
-                speakText(data.text);  // <--- AGREGAR ESTA LÍNEA
+                speakText(data.text);
                 animateMouth(true);
                 animateSoundWave(true);
                 setTimeout(() => {
