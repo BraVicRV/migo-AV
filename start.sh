@@ -1,25 +1,27 @@
 #!/bin/bash
+# start.sh - Script de inicio para AURA
 
-echo "🎭 Iniciando Amigo Virtual AURA..."
-echo ""
+echo "=================================="
+echo "  AURA - Amigo Virtual con IA"
+echo "=================================="
 
 # Verificar Python
 if ! command -v python3 &> /dev/null; then
-    echo "❌ Python3 no encontrado. Instala Python 3.8+"
+    echo "Error: Python 3 no encontrado"
     exit 1
 fi
 
-# Verificar dependencias
-echo "📦 Verificando dependencias..."
-pip3 install -q -r requirements.txt
-
-# Verificar Ollama
-if ! command -v ollama &> /dev/null; then
-    echo "⚠️ Ollama no detectado. Funcionará en modo básico."
-    echo "   Descarga Ollama desde: https://ollama.com"
-    echo ""
+# Verificar .env
+if [ ! -f .env ]; then
+    echo "Creando .env desde template..."
+    cp .env.example .env
+    echo "Por favor edita .env con tus API keys"
 fi
 
-# Iniciar
-echo "🚀 Iniciando..."
-python3 main.py
+# Instalar dependencias
+echo "Instalando dependencias..."
+pip install -r requirements.txt
+
+# Iniciar servidor
+echo "Iniciando AURA..."
+python3 -m uvicorn web_app:app --host 0.0.0.0 --port 8000 --reload

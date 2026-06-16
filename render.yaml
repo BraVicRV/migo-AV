@@ -1,10 +1,20 @@
+# Render.yaml - Configuración para deploy gratuito en Render.com
+# https://render.com
+
 services:
   - type: web
     name: aura-amigo-virtual
-    runtime: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: python web_app.py
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "uvicorn web_app:app --host 0.0.0.0 --port $PORT"
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.12.0
+      - key: GROQ_API_KEY
+        sync: false  # Se configura en el dashboard de Render
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
+    healthCheckPath: /api/health
     plan: free

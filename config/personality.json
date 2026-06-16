@@ -12,11 +12,11 @@
     "rock suave"
   ],
   "catchphrases": [
-    "¡Qué bueno verte!",
-    "Cuéntame todo",
-    "Estoy aquí para ti"
+    "Que bueno verte!",
+    "Cuentame todo",
+    "Estoy aqui para ti"
   ],
-  "language_formality": "tú",
+  "language_formality": "tu",
   "response_length": "medio",
-  "use_emojis": true
+  "use_emojis": false
 }

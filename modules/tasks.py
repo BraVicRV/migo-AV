@@ -1,31 +1,63 @@
 """
 📝 GESTOR DE TAREAS Y EVENTOS
+Sincronizado con Supabase por usuario
 """
 
 import json
+import os
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import List, Dict, Optional
 
+# Importar Supabase si está disponible
+try:
+    from core.supabase_client import get_supabase_manager
+    SUPABASE_AVAILABLE = True
+except ImportError:
+    SUPABASE_AVAILABLE = False
+
+
 class TaskManager:
-    def __init__(self, storage_path: str = "data/tasks.json"):
-        self.storage_path = storage_path
+    def __init__(self, user_id: str = "default", storage_path: str = None):
+        self.user_id = user_id
+        self.storage_path = storage_path or f"data/tasks_{user_id}.json"
         Path("data").mkdir(exist_ok=True)
+        self.supabase = get_supabase_manager() if SUPABASE_AVAILABLE else None
         self.tasks = self.load_tasks()
 
     def load_tasks(self) -> List[Dict]:
-        """Carga tareas guardadas"""
+        """Carga tareas: primero desde Supabase, luego fallback local."""
+        # 1. Intentar Supabase
+        if self.supabase and self.supabase.is_connected():
+            try:
+                cloud_tasks = self.supabase.load_user_tasks(self.user_id)
+                if cloud_tasks is not None:
+                    print(f"[Tasks] Cargadas desde Supabase para {self.user_id}")
+                    return cloud_tasks
+            except Exception as e:
+                print(f"[Tasks] Error cargando de Supabase: {e}")
+
+        # 2. Fallback local
         if Path(self.storage_path).exists():
             with open(self.storage_path, 'r', encoding='utf-8') as f:
                 return json.load(f)
         return []
 
     def save_tasks(self):
-        """Guarda tareas"""
+        """Guarda tareas en Supabase y localmente."""
+        # 1. Guardar en Supabase
+        if self.supabase and self.supabase.is_connected():
+            try:
+                self.supabase.save_user_tasks(self.user_id, self.tasks)
+                print(f"[Tasks] Sincronizadas a Supabase para {self.user_id}")
+            except Exception as e:
+                print(f"[Tasks] Error sincronizando a Supabase: {e}")
+
+        # 2. Guardar localmente
         with open(self.storage_path, 'w', encoding='utf-8') as f:
             json.dump(self.tasks, f, ensure_ascii=False, indent=2)
 
-    def add(self, title: str, due_date: Optional[str] = None, 
+    def add(self, title: str, due_date: Optional[str] = None,
             priority: str = "media", category: str = "general"):
         """Agrega nueva tarea"""
         task = {
@@ -41,6 +73,7 @@ class TaskManager:
 
         self.tasks.append(task)
         self.save_tasks()
+        return task
 
     def complete(self, task_id: int):
         """Marca tarea como completada"""
@@ -59,7 +92,7 @@ class TaskManager:
         """Obtiene tareas para hoy"""
         today = datetime.now().date().isoformat()
         return [
-            t for t in self.tasks 
+            t for t in self.tasks
             if not t["completed"] and t.get("due_date", "").startswith(today)
         ]
 
