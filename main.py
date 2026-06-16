@@ -19,12 +19,22 @@ from pathlib import Path
 from typing import Dict, List, Optional
 
 from core.brain import VirtualBrain
-from core.voice import VoiceManager
 from core.scheduler import RoutineScheduler
 from core.emotions import EmotionAnalyzer
 from modules.music import MusicRecommender
 from modules.tasks import TaskManager
 from modules.study import StudyAssistant
+
+# Import opcional de VoiceManager (solo modo consola, no en web)
+try:
+    from core.voice import VoiceManager
+    VOICE_AVAILABLE = True
+    print("[Voice] Módulo de voz cargado correctamente")
+except ImportError as e:
+    VOICE_AVAILABLE = False
+    VoiceManager = None
+    print(f"[Voice] Módulo de voz no disponible: {e}")
+    print("[Voice] Usando solo modo web (voz por navegador)")
 
 
 # ------------------------------------------------------------------
@@ -61,14 +71,18 @@ class AmigoVirtual:
 
         # Cerebro con memoria separada por usuario
         self.brain = VirtualBrain(user_id=self.user_id, amigo_instance=self)
-        
+
         # Voz: solo en modo consola, NO en modo web
         if getattr(self, '_web_mode', False):
             self.voice = None
             print("[Voice] Modo web detectado, voz del sistema desactivada")
-        else:
+        elif VOICE_AVAILABLE:
             self.voice = VoiceManager()
-        
+            print("[Voice] Voz activada para modo consola")
+        else:
+            self.voice = None
+            print("[Voice] Voz no disponible (modo silencioso)")
+
         self.scheduler = RoutineScheduler(self, user_id=self.user_id)
         self.emotions = EmotionAnalyzer()
         self.music = MusicRecommender()
@@ -90,7 +104,7 @@ class AmigoVirtual:
     # ------------------------------------------------------------------
     # Wrapper para voz (solo en modo consola, no en web)
     # ------------------------------------------------------------------
-    
+
     def _speak(self, text: str):
         """Wrapper para voz: solo en modo consola, NO en modo web"""
         if self.voice and not getattr(self, '_web_mode', False):
@@ -157,13 +171,13 @@ class AmigoVirtual:
         self.running = True
         self.setup_scheduled_routines()
         self.scheduler.start()
-        
+
         # Generar saludo proactivo usando el motor de curiosidad del cerebro
         greeting = self.brain.generate_proactive_greeting()
-        
+
         # Iniciar hilo de check-ins proactivos
         self._start_proactive_thread()
-        
+
         return greeting
 
     def _start_proactive_thread(self):
@@ -171,24 +185,24 @@ class AmigoVirtual:
         # Evitar múltiples hilos
         if self._proactive_thread and self._proactive_thread.is_alive():
             return
-            
+
         def proactive_loop():
             while self.running:
                 time.sleep(600)  # Verificar cada 10 minutos
                 if not self.running:
                     continue
-                
+
                 # No interrumpir si esta en horario de clase
                 if self.scheduler.is_in_active_hours():
                     continue
-                
+
                 # Generar check-in proactivo
                 checkin = self.brain.generate_proactive_checkin()
                 if checkin:
                     # En modo web, esto se enviaria via WebSocket
                     # Por ahora solo lo registramos
                     print(f"\n[PROACTIVO/{self.user_id}] {checkin}")
-        
+
         self._proactive_thread = threading.Thread(target=proactive_loop, daemon=True)
         self._proactive_thread.start()
 
@@ -348,9 +362,9 @@ class AmigoVirtual:
         Respuesta de crisis con empatía real y video motivacional automático.
         """
         import random
-        
+
         self._crisis_count += 1
-        
+
         # Respuestas que evolucionan
         if self._crisis_count == 1:
             responses = [
@@ -370,9 +384,9 @@ class AmigoVirtual:
                 f"{self.user_name}, eres más fuerte de lo que crees. Un día a la vez.",
                 f"Te envío un abrazo fuerte, {self.user_name}. Esto también pasará.",
             ]
-        
+
         response = random.choice(responses)
-        
+
         # Reproducir video motivacional automáticamente (no buscar)
         if getattr(self, '_web_mode', False):
             try:
@@ -390,11 +404,11 @@ class AmigoVirtual:
                 response += "\n\nTe estoy poniendo algo que puede ayudarte. Solo escucha..."
             except Exception as e:
                 print(f"[Crisis] Error abriendo video: {e}")
-        
+
         # Recursos de emergencia (solo primera vez, al final)
         if self._crisis_count == 1:
             response += "\n\nSi necesitas hablar con alguien ahora mismo: en México llama al 800-911-2000 (Linea de la Vida), o al 911 si es urgente. También puedes escribirme todo lo que necesites."
-        
+
         return response
 
     def handle_gratitude(self) -> str:
@@ -749,7 +763,7 @@ class AmigoVirtual:
     # ------------------------------------------------------------------
     # NUEVO: Meal con contexto personal
     # ------------------------------------------------------------------
-    
+
     async def _handle_meal_with_context(self) -> str:
         """Recomienda comida, a veces con contexto personal."""
         # 30% de chance de añadir contexto personal
@@ -763,7 +777,7 @@ class AmigoVirtual:
                 preface = ""
         else:
             preface = ""
-        
+
         meal = await self.recommend_meal()
         return preface + meal
 
@@ -859,7 +873,7 @@ NO uses emojis. Solo el mensaje."""
                           "No estas solo. Juntos encontramos una luz."],
             "ansioso":   ["Respira profundo. Todo va a estar bien, un paso a la vez.",
                           "La calma llegara. Que tal si hacemos una pausa?",
-                          "Confia en ti. Has superado cosas dificiles antes."],
+                          "Confia en ti. Has superado cosas difiles antes."],
             "cansado":   ["El descanso es importante. Has dormido bien?",
                           "No te exijas tanto. Tomate un momento para ti.",
                           "A veces parar tambien es avanzar."],
@@ -1147,14 +1161,14 @@ No uses emojis."""
 # ------------------------------------------------------------------
 if __name__ == "__main__":
     import argparse
-    
+
     parser = argparse.ArgumentParser(description="AURA - Amigo Virtual")
     parser.add_argument("--user-id", default="default", help="ID de usuario")
     parser.add_argument("--web", action="store_true", help="Iniciar modo web")
     args = parser.parse_args()
-    
+
     amigo = AmigoVirtual(user_id=args.user_id)
-    
+
     if args.web:
         from web_app import app
         import uvicorn
