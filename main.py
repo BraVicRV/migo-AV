@@ -328,8 +328,8 @@ class AmigoVirtual:
             return "time_request"
         # MEJORADO: más variaciones para comida
         if any(x in text_lower for x in ["que debo comer", "que comer", "tengo hambre", 
-                                          "recomiendame comida", "que cocino", "que preparo",
-                                          "que almuerzo", "que ceno", "que desayuno"]):
+                                        "recomiendame comida", "que cocino", "que preparo",
+                                        "que almuerzo", "que ceno", "que desayuno"]):
             return "meal_request"
         if "cambia tu" in text_lower or "personaliza" in text_lower:
             return "personalization"
@@ -564,7 +564,7 @@ class AmigoVirtual:
 
     async def handle_study_mode(self, text: str) -> str:
         subject = re.sub(r"(estudiar|modo estudio|ayudame a estudiar|repasar|estudio)",
-                         "", text, flags=re.I).strip()
+                        "", text, flags=re.I).strip()
         if not subject:
             subject = "general"
         self.study.start_session(subject)
@@ -578,7 +578,7 @@ class AmigoVirtual:
         if ("musica" in text_lower and
                 any(w in text_lower for w in ["recomienda", "recomiendas", "que musica"])):
             songs = ["Despacito - Luis Fonsi", "Felices los 4 - Maluma",
-                     "Tusa - Karol G", "Hawaii - Maluma"]
+                    "Tusa - Karol G", "Hawaii - Maluma"]
             selected = random.sample(songs, 2)
             self.last_recommendations.append({
                 "type": "music_recommendation",
@@ -640,7 +640,7 @@ class AmigoVirtual:
             return "Para cambiar mi nombre, escribe: 'cambia tu nombre a [nombre]'"
         if "actitud" in text_lower:
             attitudes = {"calida": "calida y empatica", "energetica": "energetica",
-                         "divertida": "divertida", "seria": "seria"}
+                        "divertida": "divertida", "seria": "seria"}
             for key, value in attitudes.items():
                 if key in text_lower:
                     response = self.personalize("attitude", value)
@@ -730,13 +730,13 @@ class AmigoVirtual:
         weekly_schedule = self.scheduler.get_weekly_schedule()
         days = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo']
         day_names = {'lunes': 'Lunes', 'martes': 'Martes', 'miercoles': 'Miercoles',
-                     'jueves': 'Jueves', 'viernes': 'Viernes', 'sabado': 'Sabado', 'domingo': 'Domingo'}
+                    'jueves': 'Jueves', 'viernes': 'Viernes', 'sabado': 'Sabado', 'domingo': 'Domingo'}
         schedule_text = []
         for day in days:
             classes = weekly_schedule.get(day, [])
             if classes:
                 class_list = [f"{c.get('course', c.get('name', 'Clase'))} ({c['start']}-{c['end']})"
-                              for c in classes]
+                            for c in classes]
                 schedule_text.append(f"{day_names[day]}: {', '.join(class_list)}")
         if not schedule_text:
             response = "No tienes clases agendadas. Puedes agregarlas desde el panel de horario."
@@ -869,18 +869,18 @@ NO uses emojis. Solo el mensaje."""
 
         messages = {
             "triste":    ["Se que no es un buen momento, pero estoy aqui para ti.",
-                          "Los dias dificiles tambien pasan. Quieres hablar?",
-                          "No estas solo. Juntos encontramos una luz."],
+                        "Los dias dificiles tambien pasan. Quieres hablar?",
+                        "No estas solo. Juntos encontramos una luz."],
             "ansioso":   ["Respira profundo. Todo va a estar bien, un paso a la vez.",
-                          "La calma llegara. Que tal si hacemos una pausa?",
-                          "Confia en ti. Has superado cosas difiles antes."],
+                        "La calma llegara. Que tal si hacemos una pausa?",
+                        "Confia en ti. Has superado cosas difiles antes."],
             "cansado":   ["El descanso es importante. Has dormido bien?",
-                          "No te exijas tanto. Tomate un momento para ti.",
-                          "A veces parar tambien es avanzar."],
+                        "No te exijas tanto. Tomate un momento para ti.",
+                        "A veces parar tambien es avanzar."],
             "feliz":     ["Me alegra verte asi! Sigue asi, vas genial.",
-                          "Que bonito verte feliz. Que te tiene tan contento?"],
+                        "Que bonito verte feliz. Que te tiene tan contento?"],
             "neutral":   ["Como va todo? Estoy aqui para lo que necesites.",
-                          "Hay algo en lo que pueda ayudarte hoy?"]
+                        "Hay algo en lo que pueda ayudarte hoy?"]
         }
 
         if trend == "empeorando" and mood == "neutral":

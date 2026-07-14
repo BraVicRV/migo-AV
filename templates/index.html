@@ -38,20 +38,17 @@
             font-size: 14px;
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: var(--bg-tertiary); border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: var(--bg-hover); }
 
-        /* Layout */
         .app-container {
             display: flex;
             height: 100vh;
             width: 100vw;
         }
 
-        /* Mobile Menu Button */
         .menu-toggle {
             display: none;
             position: fixed;
@@ -68,16 +65,67 @@
         }
         .menu-toggle:hover { background: var(--bg-hover); }
 
-        /* Sidebar */
         .sidebar {
-            width: 300px;
-            min-width: 300px;
+            width: 320px;
+            min-width: 320px;
+            max-width: 320px;
             background: var(--bg-secondary);
             border-right: 1px solid var(--border);
             display: flex;
             flex-direction: column;
             overflow-y: auto;
             transition: transform 0.3s ease;
+            padding-bottom: 20px;
+            flex-shrink: 0;
+            scrollbar-width: thin;
+            scrollbar-color: var(--bg-hover) var(--bg-secondary);
+        }
+
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--bg-hover); border-radius: 3px; }
+        .sidebar::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+        .panel {
+            margin: 12px 16px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            overflow: visible;
+            flex-shrink: 0;
+        }
+
+        .panel-body {
+            padding: 12px 16px;
+            overflow: visible;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+        }
+
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding-right: 0;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+            gap: 12px;
+        }
+        .info-row:last-child { border-bottom: none; }
+        .info-label { color: var(--text-muted); font-weight: 400; flex-shrink: 0; }
+        .info-value {
+            color: var(--text-primary);
+            font-weight: 500;
+            text-align: right;
+            max-width: 70%;
+            word-break: break-word;
         }
 
         .sidebar-header {
@@ -159,15 +207,6 @@
             75%, 100% { transform: scale(1.5); opacity: 0; }
         }
 
-        /* Panel */
-        .panel {
-            margin: 12px 16px;
-            background: var(--bg-tertiary);
-            border-radius: var(--radius);
-            border: 1px solid var(--border);
-            overflow: hidden;
-        }
-
         .panel-header {
             padding: 12px 16px;
             background: rgba(255,255,255,0.02);
@@ -191,34 +230,6 @@
             opacity: 0.6;
         }
 
-        .panel-body {
-            padding: 12px 16px;
-        }
-
-        /* Info Rows */
-        .info-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 6px 0;
-            border-bottom: 1px solid var(--border);
-            font-size: 13px;
-        }
-
-        .info-row:last-child { border-bottom: none; }
-
-        .info-label {
-            color: var(--text-muted);
-            font-weight: 400;
-        }
-
-        .info-value {
-            color: var(--text-primary);
-            font-weight: 500;
-            text-align: right;
-        }
-
-        /* Emotion Display */
         .emotion-display {
             display: flex;
             align-items: center;
@@ -303,15 +314,6 @@
             color: var(--text-muted);
         }
 
-        /* Lists */
-        .list-container {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            max-height: 160px;
-            overflow-y: auto;
-        }
-
         .list-item {
             display: flex;
             align-items: center;
@@ -362,7 +364,6 @@
             font-size: 12px;
         }
 
-        /* Buttons */
         .btn {
             width: 100%;
             padding: 8px;
@@ -374,6 +375,7 @@
             cursor: pointer;
             transition: all 0.2s;
             font-family: inherit;
+            margin-top: 8px;
         }
 
         .btn:hover {
@@ -404,7 +406,6 @@
             color: var(--text-primary);
         }
 
-        /* Quick Actions Grid */
         .quick-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -433,7 +434,7 @@
             transform: translateY(-1px);
         }
 
-        /* Main Content */
+        /* MAIN CONTENT */
         .main-content {
             flex: 1;
             display: flex;
@@ -443,7 +444,6 @@
             position: relative;
         }
 
-        /* Avatar Section */
         .avatar-section {
             padding: 32px 24px 20px;
             text-align: center;
@@ -469,65 +469,37 @@
             to { transform: rotate(360deg); }
         }
 
-        .avatar-face {
+        .avatar-abstract {
             width: 90px;
             height: 90px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
             border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), var(--accent-dark));
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
-            transition: transform 0.2s;
             position: relative;
             box-shadow: 0 8px 32px rgba(99, 102, 241, 0.3);
+            transition: transform 0.2s;
         }
 
-        .avatar-face:hover { transform: scale(1.05); }
+        .avatar-abstract:hover { transform: scale(1.05); }
 
-        .eyes {
+        .avatar-inner {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
             display: flex;
-            gap: 18px;
-            margin-bottom: 10px;
+            align-items: center;
+            justify-content: center;
         }
 
-        .eye {
-            width: 14px;
-            height: 14px;
-            background: white;
-            border-radius: 50%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .pupil {
-            width: 6px;
-            height: 6px;
-            background: #1e1b4b;
-            border-radius: 50%;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            transition: transform 0.15s ease;
-        }
-
-        .mouth {
-            width: 28px;
-            height: 4px;
-            background: white;
-            border-radius: 2px;
-            transition: all 0.3s;
-        }
-
-        .mouth.speaking {
-            animation: speak 0.3s ease infinite;
-        }
-
-        @keyframes speak {
-            0%, 100% { width: 28px; height: 4px; border-radius: 2px; }
-            50% { width: 40px; height: 12px; border-radius: 0 0 20px 20px; }
+        .avatar-inner svg {
+            width: 32px;
+            height: 32px;
+            color: white;
+            opacity: 0.9;
         }
 
         .sound-wave {
@@ -558,7 +530,7 @@
         .status-text.speaking { color: var(--accent-light); }
         .status-text.error { color: var(--danger); }
 
-        /* Chat Section */
+        /* CHAT SECTION */
         .chat-section {
             flex: 1;
             display: flex;
@@ -601,6 +573,120 @@
             color: white;
         }
 
+        /* MUSIC PLAYER */
+        .music-player {
+            display: none;
+            margin: 0 16px 12px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            border: 1px solid var(--border);
+            background: var(--bg-tertiary);
+        }
+
+        .music-player.show { display: block; }
+
+        .music-player iframe {
+            width: 100%;
+            height: 200px;
+            border: none;
+        }
+
+        .music-player-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: var(--bg-secondary);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .music-player-title {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .music-close-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .music-close-btn:hover { color: var(--danger); }
+
+        /* VOICE SELECTOR */
+        .voice-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-top: 1px solid var(--border);
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .voice-selector select {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            padding: 4px 8px;
+            font-size: 11px;
+            font-family: inherit;
+            outline: none;
+            flex: 1;
+        }
+
+        .voice-selector select:focus { border-color: var(--accent); }
+
+        /* PERSONALITY CONFIG */
+        .personality-config {
+            display: none;
+            margin: 12px 16px;
+            background: var(--bg-tertiary);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            padding: 16px;
+        }
+
+        .personality-config.show { display: block; }
+
+        .personality-config h4 {
+            font-size: 13px;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        .config-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+
+        .config-row label {
+            color: var(--text-muted);
+            min-width: 80px;
+        }
+
+        .config-row input,
+        .config-row select {
+            flex: 1;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 6px 10px;
+            color: var(--text-primary);
+            font-size: 12px;
+            font-family: inherit;
+        }
+
+        /* MESSAGES */
         .messages {
             flex: 1;
             overflow-y: auto;
@@ -662,7 +748,7 @@
         .message.user .message-time { color: rgba(255,255,255,0.7); }
         .message.bot .message-time { color: var(--text-muted); }
 
-        /* Typing Indicator */
+        /* TYPING */
         .typing-indicator {
             display: flex;
             align-items: center;
@@ -692,7 +778,7 @@
             margin-left: 8px;
         }
 
-        /* Crisis Alert */
+        /* CRISIS */
         .crisis-alert {
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid rgba(239, 68, 68, 0.3);
@@ -715,7 +801,7 @@
             color: var(--danger);
         }
 
-        /* Input Area */
+        /* INPUT */
         .input-area {
             padding: 12px 16px;
             border-top: 1px solid var(--border);
@@ -781,7 +867,53 @@
 
         .msg-input::placeholder { color: var(--text-muted); }
 
-        /* Modal */
+        /* WAKE STATUS */
+        #wakeStatus {
+            display: none;
+            margin-top: 8px;
+            padding: 6px 16px;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.4);
+            border-radius: 20px;
+            font-size: 12px;
+            color: #10b981;
+            transition: all 0.3s;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        #wakeStatus.show { display: block; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #wakeFlash {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(16, 185, 129, 0.15);
+            border: 2px solid #10b981;
+            border-radius: 50%;
+            width: 120px;
+            height: 120px;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        #wakeFlash.active {
+            display: block;
+            animation: flashPulse 0.8s ease-out forwards;
+        }
+
+        @keyframes flashPulse {
+            0% { transform: translate(-50%, -50%) scale(0.3); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; }
+        }
+
+        /* MODALS */
         .modal-overlay {
             position: fixed;
             inset: 0;
@@ -857,7 +989,6 @@
             transition: all 0.2s;
         }
 
-        /* API Key Modal Specific */
         .api-key-input {
             font-family: monospace;
             letter-spacing: 0.5px;
@@ -870,46 +1001,9 @@
             display: block;
         }
 
-        .api-help:hover {
-            text-decoration: underline;
-        }
+        .api-help:hover { text-decoration: underline; }
 
-        /* Responsive */
-        @media (max-width: 768px) {
-            .menu-toggle { display: block; }
-            .sidebar {
-                position: fixed;
-                left: 0;
-                top: 0;
-                height: 100%;
-                z-index: 50;
-                transform: translateX(-100%);
-                box-shadow: 4px 0 24px rgba(0,0,0,0.5);
-            }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { width: 100%; }
-            .message { max-width: 90%; }
-        }
-
-        /* Overlay for mobile sidebar */
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.5);
-            z-index: 40;
-        }
-
-        .sidebar-overlay.show { display: block; }
-
-        /* Scrollbar for lists */
-        .scrollable {
-            max-height: 140px;
-            overflow-y: auto;
-            padding-right: 4px;
-        }
-
-        /* Badge */
+        /* BADGE */
         .badge {
             display: inline-block;
             padding: 2px 8px;
@@ -933,13 +1027,59 @@
             background: rgba(59, 130, 246, 0.15);
             color: var(--info);
         }
+
+        /* SIDEBAR OVERLAY */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 40;
+        }
+
+        .sidebar-overlay.show { display: block; }
+
+        /* RESPONSIVE */
+        @media (max-width: 768px) {
+            .menu-toggle { display: block; }
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100%;
+                z-index: 50;
+                transform: translateX(-100%);
+                box-shadow: 4px 0 24px rgba(0,0,0,0.5);
+            }
+            .sidebar.open { transform: translateX(0); }
+            .main-content { width: 100%; }
+            .message { max-width: 90%; }
+            .avatar-section { padding: 24px 16px 16px; }
+            .avatar-abstract { width: 70px; height: 70px; }
+            .chat-section { margin: 0 12px 12px; }
+            .music-player iframe { height: 160px; }
+        }
+
+        @media (max-width: 480px) {
+            .sidebar { width: 280px; min-width: 280px; max-width: 280px; }
+            .quick-grid { grid-template-columns: 1fr 1fr; }
+            .quick-pills { padding: 8px 12px; }
+            .pill { padding: 4px 10px; font-size: 11px; }
+            .messages { padding: 12px; }
+            .bubble { padding: 8px 12px; font-size: 12px; }
+            .input-area { padding: 8px 12px; }
+            .input-btn { width: 36px; height: 36px; }
+            .msg-input { padding: 8px 14px; font-size: 13px; }
+        }
     </style>
 </head>
 <body>
 
     <button class="menu-toggle" onclick="toggleSidebar()" aria-label="Menu">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
     </button>
 
@@ -976,7 +1116,52 @@
                     <div class="info-row"><span class="info-label">Actitud</span><span class="info-value" id="pAttitude">-</span></div>
                     <div class="info-row"><span class="info-label">Humor</span><span class="info-value" id="pHumor">-</span></div>
                     <div class="info-row"><span class="info-label">Empatia</span><span class="info-value" id="pEmpathy">-</span></div>
+                    <div class="info-row"><span class="info-label">Genero</span><span class="info-value" id="pGender">-</span></div>
+                    <div class="info-row"><span class="info-label">Voz</span><span class="info-value" id="pVoiceType">-</span></div>
                 </div>
+            </div>
+
+            <!-- Configuración de personalidad -->
+            <div class="personality-config" id="personalityConfig">
+                <h4>Personalizar AURA</h4>
+                <div class="config-row">
+                    <label>Nombre:</label>
+                    <input type="text" id="configName" placeholder="AURA" maxlength="20">
+                </div>
+                <div class="config-row">
+                    <label>Genero:</label>
+                    <select id="configGender">
+                        <option value="femenino">Femenino</option>
+                        <option value="masculino">Masculino</option>
+                        <option value="neutral">Neutral</option>
+                    </select>
+                </div>
+                <div class="config-row">
+                    <label>Actitud:</label>
+                    <select id="configAttitude">
+                        <option value="calida y empatica">Calida y empatica</option>
+                        <option value="energetica y motivadora">Energetica</option>
+                        <option value="divertida y casual">Divertida</option>
+                        <option value="seria y profesional">Seria</option>
+                    </select>
+                </div>
+                <div class="config-row">
+                    <label>Empatia:</label>
+                    <select id="configEmpathy">
+                        <option value="alta">Alta</option>
+                        <option value="media">Media</option>
+                        <option value="baja">Baja</option>
+                    </select>
+                </div>
+                <div class="config-row">
+                    <label>Humor:</label>
+                    <select id="configHumor">
+                        <option value="moderado">Moderado</option>
+                        <option value="bajo">Bajo</option>
+                        <option value="alto">Alto</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="savePersonality()" style="margin-top:8px">Guardar cambios</button>
             </div>
 
             <!-- Estado Emocional -->
@@ -991,7 +1176,10 @@
                     <div class="emotion-display">
                         <div class="emotion-icon neutral" id="emoIcon">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+                                <circle cx="12" cy="12" r="10"/>
+                                <line x1="8" y1="15" x2="16" y2="15"/>
+                                <line x1="9" y1="9" x2="9.01" y2="9"/>
+                                <line x1="15" y1="9" x2="15.01" y2="9"/>
                             </svg>
                         </div>
                         <div class="emotion-details">
@@ -1013,7 +1201,7 @@
                     <h3>Lo que sabe de ti</h3>
                 </div>
                 <div class="panel-body">
-                    <div class="list-container scrollable" id="userFactsList">
+                    <div class="list-container" id="userFactsList">
                         <div class="empty-state">Cuentame cosas sobre ti</div>
                     </div>
                 </div>
@@ -1023,15 +1211,18 @@
             <div class="panel">
                 <div class="panel-header">
                     <svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
                     <h3>Horario</h3>
                 </div>
                 <div class="panel-body">
-                    <div class="list-container scrollable" id="scheduleList">
+                    <div class="list-container" id="scheduleList">
                         <div class="empty-state">Sin clases configuradas</div>
                     </div>
-                    <button class="btn" onclick="openScheduleModal()" style="margin-top:8px">+ Agregar clase</button>
+                    <button class="btn" onclick="openScheduleModal()">+ Agregar clase</button>
                     <div class="badge badge-info" id="activeBadge">Verificando...</div>
                 </div>
             </div>
@@ -1040,19 +1231,20 @@
             <div class="panel">
                 <div class="panel-header">
                     <svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                        <path d="M9 11l3 3L22 4"/>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
                     </svg>
                     <h3>Tareas</h3>
                 </div>
                 <div class="panel-body">
-                    <div class="list-container scrollable" id="taskList">
+                    <div class="list-container" id="taskList">
                         <div class="empty-state">Sin tareas pendientes</div>
                     </div>
                 </div>
             </div>
 
             <!-- Acciones Rapidas -->
-            <div class="panel" style="margin-bottom: 20px;">
+            <div class="panel" style="margin-bottom:8px;">
                 <div class="panel-header">
                     <svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
@@ -1066,22 +1258,90 @@
                     <button class="quick-btn" onclick="send('que debo comer')">Comer</button>
                     <button class="quick-btn" onclick="send('que tareas tengo')">Tareas</button>
                     <button class="quick-btn" onclick="send('que recuerdas de mi')">Memoria</button>
+                    <button class="quick-btn" onclick="togglePersonalityConfig()">Personalizar</button>
+                    <button class="quick-btn" onclick="send('como estara el clima mañana')">Clima</button>
+                    <button class="quick-btn" id="wakeToggleBtn" onclick="toggleWakeWord()" style="position:relative;">
+                        Escucha
+                        <span id="wakeIndicatorDot" style="display:none; position:absolute; top:-4px; right:-4px; width:10px; height:10px; background:#10b981; border-radius:50%; animation:ping 1.5s infinite;"></span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ESP32 PANEL -->
+            <div class="panel" id="esp32Panel" style="margin-bottom:20px;">
+                <div class="panel-header">
+                    <svg class="panel-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="2" y="2" width="20" height="20" rx="2"/>
+                        <line x1="8" y1="2" x2="8" y2="22"/>
+                        <line x1="16" y1="2" x2="16" y2="22"/>
+                    </svg>
+                    <h3>ESP32 - Parlante</h3>
+                    <span id="esp32Dot" class="status-dot" style="margin-left:auto;"></span>
+                </div>
+                <div class="panel-body">
+                    <div id="normalMode">
+                        <div class="info-row">
+                            <span class="info-label">Estado</span>
+                            <span class="info-value" id="esp32Status" style="font-size:12px;">Desconectado</span>
+                        </div>
+                        <button class="btn btn-primary" id="esp32PairBtn" onclick="generatePairingCode()" style="margin-top:8px; width:100%;">
+                            🔗 Generar código
+                        </button>
+                        <div id="esp32CodeSection" style="display:none; margin-top:10px; text-align:center;">
+                            <div style="background:var(--bg-primary); padding:12px; border-radius:8px; border:1px solid var(--accent);">
+                                <div style="font-size:11px; color:var(--text-muted);">Código para ESP32:</div>
+                                <div style="font-size:28px; font-weight:bold; color:var(--accent-light); letter-spacing:4px; margin:8px 0;" id="esp32Code">XXXXXX</div>
+                                <div style="font-size:11px; color:var(--text-muted);">Expira en 10 minutos</div>
+                                <button class="btn btn-secondary" onclick="copyESP32Code()" style="margin-top:8px; width:auto; padding:4px 16px;">
+                                    📋 Copiar
+                                </button>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" id="esp32UnlinkBtn" onclick="unlinkESP32()" style="margin-top:8px; display:none; width:100%;">
+                            🔌 Desvincular
+                        </button>
+                    </div>
+                    
+                    <div id="esp32Mode" style="display:none;">
+                        <div style="text-align:center; padding:8px 0;">
+                            <div style="font-size:40px; margin-bottom:4px;">🎤</div>
+                            <div style="font-size:13px; font-weight:600; color:var(--success);">
+                                🔊 ESP32 Conectado
+                            </div>
+                            <div style="font-size:11px; color:var(--text-muted); margin-top:4px;">
+                                Di <strong style="color:var(--accent-light);">"Hey Migo"</strong> para hablar
+                            </div>
+                            <div style="margin-top:10px; padding:8px; background:rgba(16,185,129,0.08); border-radius:8px; border:1px solid rgba(16,185,129,0.2);">
+                                <div style="font-size:12px; color:var(--success);" id="esp32ListeningStatus">
+                                    🎧 Escuchando...
+                                </div>
+                                <div style="font-size:10px; color:var(--text-muted); margin-top:4px; word-break:break-all;" id="esp32LastCommand">
+                                    Esperando comando...
+                                </div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary" onclick="toggleESP32Mode()" style="margin-top:8px; width:100%;">
+                            💬 Cambiar a chat
+                        </button>
+                    </div>
                 </div>
             </div>
         </aside>
 
         <!-- MAIN -->
         <main class="main-content">
-            <!-- Avatar -->
             <div class="avatar-section">
                 <div class="avatar-container">
                     <div class="avatar-ring"></div>
-                    <div class="avatar-face" id="avatarFace">
-                        <div class="eyes">
-                            <div class="eye"><div class="pupil"></div></div>
-                            <div class="eye"><div class="pupil"></div></div>
+                    <div class="avatar-abstract" id="avatarFace">
+                        <div class="avatar-inner">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                                <circle cx="12" cy="12" r="10"/>
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+                                <line x1="9" y1="9" x2="9.01" y2="9"/>
+                                <line x1="15" y1="9" x2="15.01" y2="9"/>
+                            </svg>
                         </div>
-                        <div class="mouth" id="mouth"></div>
                     </div>
                 </div>
                 <div class="sound-wave" id="soundWave">
@@ -1090,9 +1350,13 @@
                     <div class="wave-bar"></div><div class="wave-bar"></div>
                 </div>
                 <div class="status-text" id="auraStatus">AURA esta lista</div>
+                <div id="wakeStatus">
+                    <span id="wakeStatusText">🎧 Escuchando... di "Hey Migo"</span>
+                </div>
             </div>
 
-            <!-- Chat -->
+            <div id="wakeFlash"></div>
+
             <div class="chat-section">
                 <div class="quick-pills">
                     <button class="pill" onclick="send('Hola')">Saludar</button>
@@ -1102,12 +1366,23 @@
                     <button class="pill" onclick="send('Pon musica relajante')">Musica</button>
                     <button class="pill" onclick="send('que debo comer')">Comer</button>
                     <button class="pill" onclick="send('que recuerdas de mi')">Memoria</button>
+                    <button class="pill" onclick="send('como estara el clima mañana')">Clima</button>
+                </div>
+
+                <!-- REPRODUCTOR DE MÚSICA -->
+                <div class="music-player" id="musicPlayer">
+                    <div class="music-player-header">
+                        <span class="music-player-title" id="musicTitle">Reproduciendo...</span>
+                        <button class="music-close-btn" onclick="closeMusicPlayer()">✕</button>
+                    </div>
+                    <div id="musicContainer"></div>
                 </div>
 
                 <div class="crisis-alert" id="crisisAlert">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                        <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
                     </svg>
                     <span>Si estas pasando por un momento dificil, no estas solo. Puedes llamar a una linea de crisis o hablar con alguien de confianza. Estoy aqui contigo.</span>
                 </div>
@@ -1115,7 +1390,7 @@
                 <div class="messages" id="messages">
                     <div class="message bot">
                         <div class="bubble">
-                            Hola! Soy AURA, tu amiga virtual. En que puedo ayudarte hoy?
+                            Conectando con AURA...
                             <span class="message-time" id="welcomeTime"></span>
                         </div>
                     </div>
@@ -1139,6 +1414,13 @@
                             </svg>
                         </button>
                     </div>
+                    <!-- SELECTOR DE VOZ -->
+                    <div class="voice-selector">
+                        <span>Voz:</span>
+                        <select id="voiceSelect" onchange="saveVoicePreference()">
+                            <option value="">Voz por defecto</option>
+                        </select>
+                    </div>
                 </div>
             </div>
         </main>
@@ -1148,18 +1430,18 @@
     <div class="modal-overlay" id="apiKeyModal">
         <div class="modal-box">
             <h3>Configuracion de Groq</h3>
-            <p>Para usar AURA con IA necesitas una API key de Groq (es gratuita).</p>
+            <p>Para usar AURA con IA necesitas una API key de Groq (es gratuita). Tu API key se guarda de forma segura y solo tu la usas.</p>
             <a href="https://console.groq.com" target="_blank" class="api-help">Obtener API key en console.groq.com →</a>
             <input type="password" id="apiKeyInput" class="api-key-input" placeholder="gsk_...">
             <div class="modal-actions">
                 <button class="btn-primary" onclick="saveApiKey()">Guardar</button>
                 <button class="btn-secondary" onclick="skipApiKey()">Continuar sin IA</button>
             </div>
-            <p id="apiKeyError" style="color: var(--danger); font-size: 12px; margin-top: 10px; display: none;"></p>
+            <p id="apiKeyError" style="color:var(--danger);font-size:12px;margin-top:10px;display:none"></p>
         </div>
     </div>
 
-    <!-- Modal Schedule -->
+    <!-- Modal Horario -->
     <div class="modal-overlay" id="scheduleModal">
         <div class="modal-box">
             <h3>Agregar Clase</h3>
@@ -1183,28 +1465,47 @@
     </div>
 
     <script>
-        // ============ CONFIGURACION ============
+        // ============================================
+        // CONFIGURACIÓN INICIAL
+        // ============================================
         const NOW = () => new Date().toLocaleTimeString('es', {hour:'2-digit',minute:'2-digit'});
         document.getElementById('welcomeTime').textContent = NOW();
-        
+
+        // ============================================
+        // USER ID - Identificador único por sesión
+        // ============================================
+        function getOrCreateUserId() {
+            let id = localStorage.getItem('aura_user_id');
+            if (!id) {
+                id = 'web_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now().toString(36);
+                localStorage.setItem('aura_user_id', id);
+            }
+            return id;
+        }
+
+        let userId = getOrCreateUserId();
+        console.log('User ID:', userId);
+
+        // ============================================
+        // VARIABLES GLOBALES
+        // ============================================
         let ws = null;
         let isListening = false;
         let recognition = null;
         let waveTimer = null;
         let userFacts = {};
         let msgCount = 0;
-        let proactiveIndex = 0;
-        const PROACTIVE_EVERY = 4;
+        let selectedVoice = null;
+        let availableVoices = [];
+        let esp32Paired = false;
+        let esp32DeviceId = null;
+        let wakeDetector = null;
+        let wakeEnabled = false;
+        let wakeFlashTimeout = null;
 
-        const PROACTIVE_Q = [
-            {key:'user_name', q:'Por cierto, como te llamas? Me gustaria conocerte mejor.'},
-            {key:'user_age', q:'Y cuantos anos tienes, si no te molesta que pregunte?'},
-            {key:'user_studies', q:'A que te dedicas? Estudias, trabajas, o las dos cosas?'},
-            {key:'user_likes', q:'Que te gusta hacer en tu tiempo libre?'},
-            {key:'user_goals', q:'Tienes algun objetivo importante este ano que quieras contarme?'},
-        ];
-
-        // Iconos de emocion (SVG)
+        // ============================================
+        // EMOCIONES Y CONSTANTES
+        // ============================================
         const EMOTION_ICONS = {
             neutral: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="8" y1="15" x2="16" y2="15"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
             feliz: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
@@ -1226,10 +1527,415 @@
             user_goals:'Objetivos'
         };
 
-        // ============ WEBSOCKET ============
+        // ============================================
+        // VOZ (Text-to-Speech)
+        // ============================================
+        function loadVoices() {
+            const voices = window.speechSynthesis.getVoices();
+            const voiceSelect = document.getElementById('voiceSelect');
+            const spanishVoices = voices.filter(v => v.lang.startsWith('es'));
+            availableVoices = spanishVoices.length > 0 ? spanishVoices : voices;
+            
+            voiceSelect.innerHTML = '<option value="">Voz por defecto</option>';
+            availableVoices.forEach((voice, index) => {
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${voice.name} (${voice.lang})`;
+                voiceSelect.appendChild(option);
+            });
+            
+            const savedVoice = localStorage.getItem('aura_voice_index');
+            if (savedVoice !== null && availableVoices[savedVoice]) {
+                voiceSelect.value = savedVoice;
+                selectedVoice = availableVoices[savedVoice];
+                
+                if (ws && ws.readyState === WebSocket.OPEN && selectedVoice) {
+                    ws.send(JSON.stringify({
+                        type: 'voice_preference',
+                        voice_name: selectedVoice.name
+                    }));
+                }
+            }
+        }
+
+        function saveVoicePreference() {
+            const voiceSelect = document.getElementById('voiceSelect');
+            const index = voiceSelect.value;
+            
+            if (index === "") {
+                selectedVoice = null;
+                localStorage.removeItem('aura_voice_index');
+                if (ws && ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify({ type: 'voice_preference', voice_name: '' }));
+                }
+            } else {
+                selectedVoice = availableVoices[parseInt(index)];
+                localStorage.setItem('aura_voice_index', index);
+                if (ws && ws.readyState === WebSocket.OPEN && selectedVoice) {
+                    ws.send(JSON.stringify({
+                        type: 'voice_preference',
+                        voice_name: selectedVoice.name
+                    }));
+                    console.log('🎤 Voz enviada al servidor:', selectedVoice.name);
+                }
+            }
+        }
+
+        function speakText(text) {
+            if (!('speechSynthesis' in window)) {
+                console.log('[TTS] Web Speech API no disponible');
+                return;
+            }
+            
+            window.speechSynthesis.cancel();
+            
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'es-ES';
+            utterance.rate = 0.95;
+            utterance.pitch = 1.0;
+            utterance.volume = 1.0;
+            
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+            } else {
+                const voices = window.speechSynthesis.getVoices();
+                const spanishVoice = voices.find(v => v.lang.startsWith('es'));
+                if (spanishVoice) {
+                    utterance.voice = spanishVoice;
+                }
+            }
+            
+            const gender = document.getElementById('pGender').textContent;
+            if (gender === 'masculino') {
+                utterance.pitch = 0.85;
+            } else if (gender === 'femenino') {
+                utterance.pitch = 1.15;
+            }
+            
+            const empathy = document.getElementById('pEmpathy').textContent;
+            if (empathy === 'alta') {
+                utterance.rate = 0.9;
+            }
+            
+            window.speechSynthesis.speak(utterance);
+        }
+
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = loadVoices;
+        }
+
+        // ============================================
+        // PERSONALIDAD
+        // ============================================
+        function togglePersonalityConfig() {
+            const config = document.getElementById('personalityConfig');
+            config.classList.toggle('show');
+        }
+
+        function savePersonality() {
+            const personality = {
+                name: document.getElementById('configName').value || 'AURA',
+                gender: document.getElementById('configGender').value,
+                attitude: document.getElementById('configAttitude').value,
+                empathy_level: document.getElementById('configEmpathy').value,
+                humor_level: document.getElementById('configHumor').value
+            };
+            
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'personality_update',
+                    personality: personality
+                }));
+            }
+            
+            localStorage.setItem('aura_personality', JSON.stringify(personality));
+            updatePersonality(personality);
+            togglePersonalityConfig();
+            addMsg('He actualizado mi personalidad. ¿Cómo te gusta que sea?', 'bot');
+        }
+
+        function loadSavedPersonality() {
+            const saved = localStorage.getItem('aura_personality');
+            if (saved) {
+                const p = JSON.parse(saved);
+                document.getElementById('configName').value = p.name || '';
+                document.getElementById('configGender').value = p.gender || 'femenino';
+                document.getElementById('configAttitude').value = p.attitude || 'calida y empatica';
+                document.getElementById('configEmpathy').value = p.empathy_level || 'alta';
+                document.getElementById('configHumor').value = p.humor_level || 'moderado';
+            }
+        }
+
+        // ============================================
+        // REPRODUCTOR DE MÚSICA
+        // ============================================
+        function showMusicPlayer(videoId, title, userQuery) {
+            const player = document.getElementById('musicPlayer');
+            const container = document.getElementById('musicContainer');
+            const titleEl = document.getElementById('musicTitle');
+            
+            let finalVideoId = videoId;
+            let finalTitle = title || 'Música';
+            let useNocookie = false;
+            
+            if (userQuery) {
+                const alternative = findMusicAlternative(userQuery, videoId);
+                if (alternative) {
+                    finalVideoId = alternative.id;
+                    finalTitle = alternative.title || finalTitle;
+                    useNocookie = alternative.useNocookie || false;
+                }
+            }
+            
+            titleEl.textContent = '🎵 Reproduciendo: ' + finalTitle;
+            
+            const embedUrl = useNocookie 
+                ? `https://www.youtube-nocookie.com/embed/${finalVideoId}`
+                : `https://www.youtube.com/embed/${finalVideoId}`;
+            
+            container.innerHTML = `
+                <iframe 
+                    src="${embedUrl}?autoplay=1&enablejsapi=1&origin=${window.location.origin}" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen
+                    style="width:100%;height:200px;border:none;">
+                </iframe>
+                <div style="padding: 8px 12px; background: rgba(255,255,255,0.03); text-align: center; font-size: 11px; color: var(--text-muted); display: flex; justify-content: space-between; align-items: center;">
+                    <span>▶️ Reproduciendo</span>
+                    <span>
+                        <a href="https://www.youtube.com/watch?v=${finalVideoId}" target="_blank" 
+                           style="color: var(--accent-light); text-decoration: none;">
+                            📺 Abrir en YouTube
+                        </a>
+                    </span>
+                </div>
+            `;
+            
+            player.classList.add('show');
+        }
+
+        function findMusicAlternative(query, currentVideoId) {
+            const keywords = query.toLowerCase().trim();
+            
+            const musicDB = {
+                'michael jackson': [
+                    { id: 'Z6sdxg7Q4Rw', title: 'Michael Jackson - Billie Jean (Official Video)' },
+                    { id: 'F2AitTPI5U0', title: 'Michael Jackson - Thriller (Official Video)' },
+                    { id: 'pEfrdM6g2R8', title: 'Michael Jackson - Beat It (Official Video)' },
+                    { id: 'BwNrmYRiX_o', title: 'Michael Jackson - Smooth Criminal (Official Video)' },
+                ],
+                'queen': [
+                    { id: 'fJ9rUzIMcZQ', title: 'Queen - Bohemian Rhapsody' },
+                    { id: 't0NgS8P6c84', title: 'Queen - We Will Rock You' },
+                    { id: '04854XqcfCY', title: 'Queen - We Are The Champions' },
+                ],
+                'beatles': [
+                    { id: 'A_MjCqQoLLA', title: 'The Beatles - Here Comes The Sun' },
+                    { id: 'jonXnj_2l_w', title: 'The Beatles - Let It Be' },
+                    { id: 'EduCfUQOQvQ', title: 'The Beatles - Yesterday' },
+                ],
+                'lofi': [
+                    { id: 'NlWrDbyhY4g', title: 'Lofi Hip Hop Radio' },
+                    { id: 'jfKfPfyJRdk', title: 'Chillhop Radio' },
+                ],
+                'relajante': [
+                    { id: 'NlWrDbyhY4g', title: 'Lofi Hip Hop Radio' },
+                    { id: '5qap5aO4i9A', title: 'Jazz Relaxing Music' },
+                ],
+                'clasica': [
+                    { id: '4nX2coOTp5M', title: 'Mozart - Classical Music' },
+                    { id: 'Mv8FQItHjZQ', title: 'Beethoven - Classical Music' },
+                ],
+                'rock': [
+                    { id: 'hTwnZQcXG6I', title: 'Rock Music - Best of Rock' },
+                    { id: 'v2AC41dglnM', title: 'Classic Rock Collection' },
+                ],
+                'jazz': [
+                    { id: '5qap5aO4i9A', title: 'Jazz Relaxing Music' },
+                    { id: 'q53UnhTZ3wk', title: 'Jazz Music' },
+                ],
+                'estudiar': [
+                    { id: 'NlWrDbyhY4g', title: 'Lofi Hip Hop Radio' },
+                    { id: '5qap5aO4i9A', title: 'Jazz Relaxing Music' },
+                ],
+            };
+            
+            for (const [key, videos] of Object.entries(musicDB)) {
+                if (keywords.includes(key)) {
+                    for (const video of videos) {
+                        if (video.id !== currentVideoId) {
+                            return video;
+                        }
+                    }
+                    if (videos.length > 0) {
+                        return videos[0];
+                    }
+                }
+            }
+            
+            return { id: 'NlWrDbyhY4g', title: 'Música relajante', useNocookie: true };
+        }
+
+        function closeMusicPlayer() {
+            const player = document.getElementById('musicPlayer');
+            const container = document.getElementById('musicContainer');
+            container.innerHTML = '';
+            player.classList.remove('show');
+        }
+
+        function extractYouTubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        }
+
+        // ============================================
+        // ESP32 FUNCIONES
+        // ============================================
+        async function generatePairingCode() {
+            try {
+                const r = await fetch('/api/esp32/pairing-code', {
+                    headers: {'x-user-id': userId}
+                });
+                const data = await r.json();
+                if (data.success) {
+                    document.getElementById('esp32Code').textContent = data.code;
+                    document.getElementById('esp32CodeSection').style.display = 'block';
+                    document.getElementById('esp32PairBtn').textContent = 'Regenerar código';
+                    addMsg(`🔑 Código ESP32: **${data.code}** (expira en 10 min)`, 'bot');
+                } else {
+                    addMsg(`❌ Error: ${data.error || 'No se pudo generar el código'}`, 'bot');
+                }
+            } catch (e) {
+                console.error('[ESP32] Error:', e);
+                addMsg('❌ Error de conexión con el servidor', 'bot');
+            }
+        }
+
+        function copyESP32Code() {
+            const code = document.getElementById('esp32Code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                addMsg('📋 Código copiado', 'bot');
+            }).catch(() => {
+                const range = document.createRange();
+                range.selectNode(document.getElementById('esp32Code'));
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                addMsg('📋 Código copiado', 'bot');
+            });
+        }
+
+        function toggleESP32Mode() {
+            const esp32Mode = document.getElementById('esp32Mode');
+            const normalMode = document.getElementById('normalMode');
+            const isEsp32Mode = esp32Mode.style.display === 'block';
+            
+            if (isEsp32Mode) {
+                normalMode.style.display = 'block';
+                esp32Mode.style.display = 'none';
+                document.getElementById('auraStatus').textContent = 'AURA está lista';
+                if (wakeEnabled) toggleWakeWord();
+            } else {
+                normalMode.style.display = 'none';
+                esp32Mode.style.display = 'block';
+                document.getElementById('auraStatus').textContent = '🎤 Escuchando... di "Hey Migo"';
+                if (!wakeEnabled) toggleWakeWord();
+            }
+        }
+
+        function unlinkESP32() {
+            if (confirm('¿Seguro que quieres desvincular tu ESP32?')) {
+                esp32Paired = false;
+                esp32DeviceId = null;
+                document.getElementById('esp32Dot').classList.remove('connected');
+                document.getElementById('esp32Status').textContent = 'Desconectado';
+                document.getElementById('esp32PairBtn').style.display = 'block';
+                document.getElementById('esp32UnlinkBtn').style.display = 'none';
+                document.getElementById('esp32CodeSection').style.display = 'none';
+                updateESP32UI(false);
+                addMsg('🔌 ESP32 desvinculado', 'bot');
+            }
+        }
+
+        function updateESP32UI(isConnected) {
+            const normalMode = document.getElementById('normalMode');
+            const esp32Mode = document.getElementById('esp32Mode');
+            
+            if (isConnected) {
+                normalMode.style.display = 'none';
+                esp32Mode.style.display = 'block';
+                document.querySelector('.main-content').classList.add('esp32-mode');
+                document.getElementById('auraStatus').textContent = '🎤 Escuchando... di "Hey Migo"';
+                if (!wakeEnabled) {
+                    toggleWakeWord();
+                }
+            } else {
+                normalMode.style.display = 'block';
+                esp32Mode.style.display = 'none';
+                document.querySelector('.main-content').classList.remove('esp32-mode');
+                document.getElementById('auraStatus').textContent = 'AURA está lista';
+                if (wakeEnabled) {
+                    toggleWakeWord();
+                }
+            }
+        }
+
+        function updateESP32ListeningStatus(text) {
+            const statusEl = document.getElementById('esp32ListeningStatus');
+            const lastCmdEl = document.getElementById('esp32LastCommand');
+            if (statusEl) {
+                statusEl.textContent = text || '🎧 Escuchando...';
+            }
+            if (lastCmdEl && text && !text.includes('Escuchando')) {
+                lastCmdEl.textContent = 'Último: ' + text;
+            }
+        }
+
+        async function checkESP32Status() {
+            try {
+                const r = await fetch('/api/esp32/status');
+                const data = await r.json();
+                
+                if (!data || !data.devices) {
+                    return;
+                }
+                
+                const myDevice = data.devices.find(d => d.user_id === userId);
+                
+                if (myDevice && myDevice.authenticated) {
+                    esp32Paired = true;
+                    esp32DeviceId = myDevice.device_id;
+                    document.getElementById('esp32Dot').classList.add('connected');
+                    document.getElementById('esp32Status').textContent = '🔊 Conectado';
+                    document.getElementById('esp32PairBtn').style.display = 'none';
+                    document.getElementById('esp32UnlinkBtn').style.display = 'block';
+                    document.getElementById('esp32CodeSection').style.display = 'none';
+                    updateESP32UI(true);
+                } else {
+                    esp32Paired = false;
+                    esp32DeviceId = null;
+                    document.getElementById('esp32Dot').classList.remove('connected');
+                    document.getElementById('esp32Status').textContent = 'Desconectado';
+                    document.getElementById('esp32PairBtn').style.display = 'block';
+                    document.getElementById('esp32UnlinkBtn').style.display = 'none';
+                    updateESP32UI(false);
+                }
+            } catch (e) {
+                console.error('[ESP32] Error:', e);
+                // No fallar silenciosamente, mostrar estado desconectado
+                esp32Paired = false;
+                updateESP32UI(false);
+            }
+        }
+
+        // ============================================
+        // WEBSOCKET
+        // ============================================
         function connect() {
             const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
-            ws = new WebSocket(`${proto}//${location.host}/ws`);
+            ws = new WebSocket(`${proto}//${location.host}/ws/${userId}`);
 
             ws.onopen = () => {
                 setConn(true);
@@ -1239,6 +1945,28 @@
                 } else {
                     document.getElementById('apiKeyModal').classList.add('show');
                 }
+                
+                const savedPersonality = localStorage.getItem('aura_personality');
+                if (savedPersonality) {
+                    ws.send(JSON.stringify({
+                        type: 'personality_update',
+                        personality: JSON.parse(savedPersonality)
+                    }));
+                }
+                
+                // Enviar voz guardada
+                const savedVoice = localStorage.getItem('aura_voice_index');
+                if (savedVoice !== null && availableVoices[savedVoice]) {
+                    const voice = availableVoices[parseInt(savedVoice)];
+                    if (voice) {
+                        ws.send(JSON.stringify({
+                            type: 'voice_preference',
+                            voice_name: voice.name
+                        }));
+                    }
+                }
+                
+                checkESP32Status();
             };
 
             ws.onclose = () => {
@@ -1266,25 +1994,60 @@
             }
         }
 
+        // ============================================
+        // PROCESAR MENSAJES
+        // ============================================
         function handleMsg(d) {
             switch(d.type) {
-                case 'response':
+                case 'greeting':
                     removeTyping();
                     addMsg(d.text, 'bot');
+                    speakText(d.text);
                     if (d.emotion) updateEmotion(d.emotion);
                     if (d.personality) updatePersonality(d.personality);
                     if (d.user_facts) updateUserFacts(d.user_facts);
-                    animMouth(true);
                     animWave(true);
-                    setTimeout(() => { animMouth(false); animWave(false); }, Math.min(d.text.length * 70, 3500));
-                    if (d.text.toLowerCase().includes('tarea')) loadTasks();
+                    setTimeout(() => animWave(false), Math.min(d.text.length * 70, 3500));
+                    break;
+                    
+                case 'response':
+                    removeTyping();
+                    if (d.text && d.text.includes('__MUSIC_URL__')) {
+                        const parts = d.text.split('__MUSIC_URL__');
+                        const url = parts[1].split('__END__')[0];
+                        const title = parts[1].split('__END__')[1] || '';
+                        const videoId = extractYouTubeId(url);
+                        const userQuery = d.user_query || '';
+                        
+                        if (videoId) {
+                            showMusicPlayer(videoId, title, userQuery);
+                            addMsg('🎵 Reproduciendo música en el reproductor de arriba', 'bot');
+                        } else {
+                            addMsg('🎵 No pude encontrar esa canción. ¿Quieres probar con otra?', 'bot');
+                        }
+                    } else {
+                        addMsg(d.text, 'bot');
+                        speakText(d.text);
+                    }
+                    
+                    if (d.emotion) updateEmotion(d.emotion);
+                    if (d.personality) updatePersonality(d.personality);
+                    if (d.user_facts) updateUserFacts(d.user_facts);
+                    animWave(true);
+                    setTimeout(() => animWave(false), Math.min(d.text.length * 70, 3500));
+                    
+                    if (d.text && (d.text.toLowerCase().includes('tarea') || 
+                                d.text.toLowerCase().includes('agregué') ||
+                                d.text.toLowerCase().includes('listo'))) {
+                        loadTasks();
+                    }
                     break;
                     
                 case 'spontaneous':
                     addMsg(d.text, 'bot');
-                    animMouth(true);
+                    speakText(d.text);
                     animWave(true);
-                    setTimeout(() => { animMouth(false); animWave(false); }, 2500);
+                    setTimeout(() => animWave(false), 2500);
                     break;
                     
                 case 'status':
@@ -1313,6 +2076,11 @@
                     updateUserFacts(d.data);
                     break;
                     
+                case 'schedule_update':
+                    loadSchedule();
+                    checkActive();
+                    break;
+                    
                 case 'error':
                     removeTyping();
                     addMsg('Error: ' + d.text, 'bot');
@@ -1333,7 +2101,9 @@
             }
         }
 
-        // ============ MENSAJES ============
+        // ============================================
+        // MENSAJES
+        // ============================================
         function send(text) {
             document.getElementById('msgInput').value = text;
             sendMsg();
@@ -1343,29 +2113,19 @@
             const inp = document.getElementById('msgInput');
             const text = inp.value.trim();
             if (!text) return;
-            
+
             if (!ws || ws.readyState !== WebSocket.OPEN) {
                 addMsg('Desconectado. Reconectando...', 'bot');
                 connect();
                 return;
             }
-            
+
             addMsg(text, 'user');
             ws.send(JSON.stringify({type:'text', text}));
             inp.value = '';
             msgCount++;
-            
+
             document.getElementById('crisisAlert').classList.remove('show');
-            
-            // Preguntas proactivas
-            if (msgCount % PROACTIVE_EVERY === 0 && proactiveIndex < PROACTIVE_Q.length) {
-                const q = PROACTIVE_Q[proactiveIndex];
-                if (!userFacts[q.key]) {
-                    setTimeout(() => { addMsg(q.q, 'bot'); proactiveIndex++; }, 1800);
-                } else {
-                    proactiveIndex++;
-                }
-            }
         }
 
         function onKey(e) { if (e.key === 'Enter') sendMsg(); }
@@ -1374,7 +2134,7 @@
             const box = document.getElementById('messages');
             const d = document.createElement('div');
             d.className = `message ${who}`;
-            d.innerHTML = `<div class=\"bubble\">${esc(text)}<span class=\"message-time\">${NOW()}</span></div>`;
+            d.innerHTML = `<div class="bubble">${esc(text)}<span class="message-time">${NOW()}</span></div>`;
             box.appendChild(d);
             box.scrollTop = box.scrollHeight;
         }
@@ -1385,7 +2145,7 @@
             const box = document.getElementById('messages');
             typingEl = document.createElement('div');
             typingEl.className = 'message bot';
-            typingEl.innerHTML = `<div class=\"bubble\"><div class=\"typing-indicator\"><div class=\"typing-dot\"></div><div class=\"typing-dot\"></div><div class=\"typing-dot\"></div>${hint ? `<span class=\"typing-hint\">${esc(hint)}</span>` : ''}</div></div>`;
+            typingEl.innerHTML = `<div class="bubble"><div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>${hint ? `<span class="typing-hint">${esc(hint)}</span>` : ''}</div></div>`;
             box.appendChild(typingEl);
             box.scrollTop = box.scrollHeight;
             updateStatus('thinking');
@@ -1401,7 +2161,9 @@
             return d.innerHTML;
         }
 
-        // ============ EMOCIONES ============
+        // ============================================
+        // EMOCIONES Y PERSONALIDAD
+        // ============================================
         function updateEmotion(e) {
             if (!e) return;
             const mood = e.mood || 'neutral';
@@ -1410,72 +2172,76 @@
             const secondary = document.getElementById('emoSecondary');
             const fill = document.getElementById('emoFill');
             const badge = document.getElementById('trendBadge');
-            
+
             icon.innerHTML = EMOTION_ICONS[mood] || EMOTION_ICONS.neutral;
             icon.className = 'emotion-icon ' + (EMOTION_CLASSES[mood] || 'neutral');
             name.textContent = mood.charAt(0).toUpperCase() + mood.slice(1);
             secondary.textContent = e.secondary_mood ? `con rasgos de ${e.secondary_mood}` : '';
-            
+
             const score = e.score ?? e.sentiment_score ?? 0;
             const pct = Math.round(((score + 1) / 2) * 100);
             fill.style.width = pct + '%';
             fill.className = 'sentiment-fill ' + (score > 0.2 ? 'positive' : score < -0.2 ? 'negative' : 'neutral');
-            
+
             const trend = e.trend || 'estable';
             badge.textContent = trend;
             badge.className = 'trend-badge ' + (trend === 'mejorando' ? 'up' : trend === 'empeorando' ? 'down' : 'flat');
         }
 
-        // ============ PERSONALIDAD ============
         function updatePersonality(p) {
             if (!p) return;
             if (p.name) document.getElementById('pName').textContent = p.name;
             if (p.attitude) document.getElementById('pAttitude').textContent = p.attitude;
             if (p.humor_level) document.getElementById('pHumor').textContent = p.humor_level;
             if (p.empathy_level) document.getElementById('pEmpathy').textContent = p.empathy_level;
+            if (p.gender) document.getElementById('pGender').textContent = p.gender;
+            if (p.voice_type) document.getElementById('pVoiceType').textContent = p.voice_type;
             document.title = (p.name || 'AURA') + ' - Amigo Virtual';
         }
 
-        // ============ USER FACTS ============
         function updateUserFacts(facts) {
             if (!facts) return;
             userFacts = {...userFacts, ...facts};
             const cont = document.getElementById('userFactsList');
             const entries = Object.entries(userFacts).filter(([,v]) => v);
-            
+
             if (!entries.length) {
-                cont.innerHTML = '<div class=\"empty-state\">Cuentame cosas sobre ti</div>';
+                cont.innerHTML = '<div class="empty-state">Cuentame cosas sobre ti</div>';
                 return;
             }
-            
+
             cont.innerHTML = entries.map(([k,v]) => 
-                `<div class=\"list-item\"><span style=\"color:var(--text-muted);min-width:80px;font-size:11px;\">${FACT_LABELS[k]||k}</span><span style=\"color:var(--text-primary);font-weight:500;\">${esc(v)}</span></div>`
+                `<div class="list-item"><span style="color:var(--text-muted);min-width:80px;font-size:11px">${FACT_LABELS[k]||k}</span><span style="color:var(--text-primary);font-weight:500">${esc(v)}</span></div>`
             ).join('');
         }
 
-        // ============ HORARIO ============
+        // ============================================
+        // HORARIO
+        // ============================================
         async function loadSchedule() {
             try {
-                const r = await fetch('/api/schedule/weekly');
+                const r = await fetch('/api/schedule/weekly', {
+                    headers: {'x-user-id': userId}
+                });
                 const data = await r.json();
                 const container = document.getElementById('scheduleList');
                 const days = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
                 const names = {lunes:'Lun',martes:'Mar',miercoles:'Mie',jueves:'Jue',viernes:'Vie',sabado:'Sab',domingo:'Dom'};
-                
+
                 let html = '';
                 let any = false;
-                
+
                 for (const day of days) {
                     const items = data[day] || [];
                     if (!items.length) continue;
                     any = true;
-                    html += `<div style=\"font-size:10px;color:var(--accent-light);font-weight:600;margin:8px 0 4px;text-transform:uppercase;\">${names[day]}</div>`;
+                    html += `<div style="font-size:10px;color:var(--accent-light);font-weight:600;margin:8px 0 4px;text-transform:uppercase">${names[day]}</div>`;
                     items.forEach((it, i) => {
-                        html += `<div class=\"list-item\"><span class=\"list-item-time\">${it.start}-${it.end}</span><span class=\"list-item-text\">${esc(it.course||it.name||'Clase')}</span><button class=\"list-item-action\" onclick=\"delClass('${day}',${i})\">Eliminar</button></div>`;
+                        html += `<div class="list-item"><span class="list-item-time">${it.start}-${it.end}</span><span class="list-item-text">${esc(it.course||it.name||'Clase')}</span><button class="list-item-action" onclick="delClass('${day}',${i})">Eliminar</button></div>`;
                     });
                 }
-                
-                container.innerHTML = any ? html : '<div class=\"empty-state\">Sin clases configuradas</div>';
+
+                container.innerHTML = any ? html : '<div class="empty-state">Sin clases configuradas</div>';
             } catch(e) {
                 console.error('Error cargando horario:', e);
             }
@@ -1483,10 +2249,12 @@
 
         async function checkActive() {
             try {
-                const r = await fetch('/api/schedule/current-course');
+                const r = await fetch('/api/schedule/current-course', {
+                    headers: {'x-user-id': userId}
+                });
                 const d = await r.json();
                 const badge = document.getElementById('activeBadge');
-                
+
                 if (d.is_active) {
                     badge.textContent = `En clase: ${d.course}`;
                     badge.className = 'badge badge-danger';
@@ -1500,7 +2268,7 @@
         }
 
         function openScheduleModal() { document.getElementById('scheduleModal').classList.add('show'); }
-        
+
         function closeScheduleModal() {
             document.getElementById('scheduleModal').classList.remove('show');
             document.getElementById('scheduleStart').value = '';
@@ -1513,16 +2281,19 @@
             const start = document.getElementById('scheduleStart').value;
             const end = document.getElementById('scheduleEnd').value;
             const course = document.getElementById('scheduleCourse').value.trim() || 'Clase';
-            
+
             if (!start || !end) {
                 alert('Selecciona hora de inicio y fin');
                 return;
             }
-            
+
             try {
                 await fetch('/api/schedule', {
                     method: 'POST',
-                    headers: {'Content-Type':'application/json'},
+                    headers: {
+                        'Content-Type':'application/json',
+                        'x-user-id': userId
+                    },
                     body: JSON.stringify({day, start, end, course})
                 });
                 closeScheduleModal();
@@ -1537,7 +2308,10 @@
             try {
                 await fetch('/api/schedule/delete', {
                     method: 'POST',
-                    headers: {'Content-Type':'application/json'},
+                    headers: {
+                        'Content-Type':'application/json',
+                        'x-user-id': userId
+                    },
                     body: JSON.stringify({day, index: idx})
                 });
                 loadSchedule();
@@ -1547,20 +2321,24 @@
             }
         }
 
-        // ============ TAREAS ============
+        // ============================================
+        // TAREAS
+        // ============================================
         async function loadTasks() {
             try {
-                const r = await fetch('/api/tasks');
+                const r = await fetch('/api/tasks', {
+                    headers: {'x-user-id': userId}
+                });
                 const tasks = await r.json();
                 const cont = document.getElementById('taskList');
-                
+
                 if (!tasks || !tasks.length) {
-                    cont.innerHTML = '<div class=\"empty-state\">Sin tareas pendientes</div>';
+                    cont.innerHTML = '<div class="empty-state">Sin tareas pendientes</div>';
                     return;
                 }
-                
+
                 cont.innerHTML = tasks.map(t => 
-                    `<div class=\"list-item\"><span class=\"list-item-text\">${esc(t.title)}</span><button class=\"list-item-action\" onclick=\"doneTask(${t.id})\">Completar</button></div>`
+                    `<div class="list-item"><span class="list-item-text">${esc(t.title)}</span><button class="list-item-action" onclick="doneTask(${t.id})">Completar</button></div>`
                 ).join('');
             } catch(e) {
                 console.error('Error cargando tareas:', e);
@@ -1569,27 +2347,32 @@
 
         async function doneTask(id) {
             try {
-                await fetch(`/api/tasks/${id}`, {method: 'DELETE'});
+                await fetch(`/api/tasks/${id}`, {
+                    method: 'DELETE',
+                    headers: {'x-user-id': userId}
+                });
                 loadTasks();
             } catch(e) {
                 console.error('Error completando tarea:', e);
             }
         }
 
-        // ============ API KEY ============
+        // ============================================
+        // API KEY
+        // ============================================
         function saveApiKey() {
             const key = document.getElementById('apiKeyInput').value.trim();
             const err = document.getElementById('apiKeyError');
-            
+
             if (!key.startsWith('gsk_')) {
-                err.textContent = 'API key invalida. Debe empezar con \"gsk_\"';
+                err.textContent = 'API key invalida. Debe empezar con "gsk_"';
                 err.style.display = 'block';
                 return;
             }
-            
+
             localStorage.setItem('groq_api_key', key);
             document.getElementById('apiKeyModal').classList.remove('show');
-            
+
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({type: 'config', api_key: key}));
             }
@@ -1600,7 +2383,9 @@
             document.getElementById('apiKeyModal').classList.remove('show');
         }
 
-        // ============ MICROFONO ============
+        // ============================================
+        // MICRÓFONO
+        // ============================================
         function toggleMic() {
             if (!('webkitSpeechRecognition' in window)) {
                 alert('Tu navegador no soporta reconocimiento de voz. Usa Chrome o Edge.');
@@ -1614,19 +2399,19 @@
             recognition.lang = 'es-ES';
             recognition.continuous = false;
             recognition.interimResults = false;
-            
+
             recognition.onstart = () => {
                 isListening = true;
                 document.getElementById('micBtn').classList.add('listening');
                 updateStatus('thinking');
             };
-            
+
             recognition.onresult = (e) => {
                 document.getElementById('msgInput').value = e.results[0][0].transcript;
                 sendMsg();
                 stopMic();
             };
-            
+
             recognition.onerror = () => stopMic();
             recognition.onend = () => stopMic();
             recognition.start();
@@ -1639,13 +2424,9 @@
             updateStatus('idle');
         }
 
-        // ============ ANIMACIONES ============
-        function animMouth(on) {
-            document.getElementById('mouth').classList.toggle('speaking', on);
-            if (on) updateStatus('speaking');
-            else updateStatus('idle');
-        }
-
+        // ============================================
+        // ANIMACIONES
+        // ============================================
         function animWave(on) {
             const bars = document.querySelectorAll('.wave-bar');
             if (on) {
@@ -1653,30 +2434,247 @@
                 waveTimer = setInterval(() => {
                     bars.forEach(b => { b.style.height = (Math.random() * 24 + 8) + 'px'; });
                 }, 100);
+                updateStatus('speaking');
             } else {
                 clearInterval(waveTimer);
                 waveTimer = null;
                 bars.forEach(b => { b.style.height = '16px'; });
+                updateStatus('idle');
             }
         }
 
-        // ============ SIDEBAR ============
         function toggleSidebar() {
             document.getElementById('sidebar').classList.toggle('open');
             document.querySelector('.sidebar-overlay').classList.toggle('show');
         }
 
-        // ============ UTILIDADES ============
-        document.addEventListener('mousemove', (e) => {
-            document.querySelectorAll('.pupil').forEach(p => {
-                const r = p.parentElement.getBoundingClientRect();
-                const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-                const dx = (e.clientX - cx) / r.width * 8;
-                const dy = (e.clientY - cy) / r.height * 8;
-                p.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
-            });
-        });
+        // ============================================
+        // WAKE WORD - Escucha Activa
+        // ============================================
+        function initWakeWord() {
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                console.warn('⚠️ Web Speech API no disponible');
+                const btn = document.getElementById('wakeToggleBtn');
+                if (btn) {
+                    btn.style.display = 'none';
+                    btn.title = 'Tu navegador no soporta reconocimiento de voz';
+                }
+                return;
+            }
+            
+            if (typeof WakeWordDetector === 'undefined') {
+                console.log('⏳ Cargando wake_word.js...');
+                const script = document.createElement('script');
+                script.src = '/static/js/wake_word.js';
+                document.head.appendChild(script);
+                script.onload = () => {
+                    console.log('✅ wake_word.js cargado');
+                    setTimeout(createWakeDetector, 100);
+                };
+                script.onerror = () => {
+                    console.error('❌ Error cargando wake_word.js');
+                    const btn = document.getElementById('wakeToggleBtn');
+                    if (btn) btn.style.display = 'none';
+                };
+                return;
+            }
+            
+            createWakeDetector();
+        }
 
+        function createWakeDetector() {
+            if (wakeDetector) {
+                console.log('⚠️ Wake detector ya existe');
+                return;
+            }
+            
+            wakeDetector = new WakeWordDetector({
+                phrases: ['hey migo', 'hámigo', 'migo', 'aura', 'ola migo', 'ey migo', 'hey amigo'],
+                confidenceThreshold: 0.3,
+                
+                onWakeWord: (transcript) => {
+                    console.log(`🔊 Wake word detectada: "${transcript}"`);
+                    showWakeFlash();
+                    
+                    if (navigator.vibrate) {
+                        navigator.vibrate([30, 50, 30]);
+                    }
+                    
+                    showWakeStatus('👋 ¡Te escucho!');
+                    
+                    let cleanTranscript = transcript || '';
+                    const wakeWords = ['hey migo', 'hamigo', 'migo', 'aura', 'ola migo', 'ey migo', 'hey amigo', 'amigo'];
+                    for (const word of wakeWords) {
+                        const regex = new RegExp(`^\\s*${word}\\s*`, 'i');
+                        cleanTranscript = cleanTranscript.replace(regex, '');
+                        const regexEnd = new RegExp(`\\s*${word}\\s*$`, 'i');
+                        cleanTranscript = cleanTranscript.replace(regexEnd, '');
+                    }
+                    cleanTranscript = cleanTranscript.trim();
+                    
+                    if (!cleanTranscript || cleanTranscript.length === 0) {
+                        showWakeStatus('🎤 Di algo...');
+                        if (!isListening) {
+                            startMic();
+                        }
+                        setTimeout(() => {
+                            if (isListening) {
+                                stopMic();
+                                if (wakeEnabled) {
+                                    showWakeStatus('🎧 Escuchando... di "Hey Migo"');
+                                } else {
+                                    hideWakeStatus();
+                                }
+                            }
+                        }, 5000);
+                        return;
+                    }
+                    
+                    addMsg(cleanTranscript, 'user');
+                    
+                    if (ws && ws.readyState === WebSocket.OPEN) {
+                        ws.send(JSON.stringify({type: 'text', text: cleanTranscript}));
+                        msgCount++;
+                    } else {
+                        addMsg('⚠️ No hay conexión con el servidor', 'bot');
+                        connect();
+                    }
+                    
+                    document.getElementById('msgInput').value = '';
+                    showWakeStatus(`🎤 "${cleanTranscript}"`);
+                    updateESP32ListeningStatus(`🎤 "${cleanTranscript}"`);
+                    
+                    setTimeout(() => {
+                        if (wakeEnabled) {
+                            showWakeStatus('🎧 Escuchando... di "Hey Migo"');
+                            updateESP32ListeningStatus('🎧 Escuchando...');
+                        } else {
+                            hideWakeStatus();
+                        }
+                    }, 3000);
+                },
+                
+                onInterimResult: (transcript) => {
+                    if (transcript && transcript.length > 0) {
+                        const input = document.getElementById('msgInput');
+                        if (input && document.activeElement !== input) {
+                            input.placeholder = `🎤 Escuchando: "${transcript}"`;
+                        }
+                    }
+                },
+                
+                onError: (error) => {
+                    console.warn('⚠️ Wake word error:', error);
+                    showWakeStatus('⚠️ Error de micrófono. Reintentando...');
+                    setTimeout(() => {
+                        if (wakeEnabled) {
+                            showWakeStatus('🎧 Escuchando... di "Hey Migo"');
+                        } else {
+                            hideWakeStatus();
+                        }
+                    }, 2000);
+                }
+            });
+            
+            console.log('✅ Wake detector creado');
+        }
+
+        function toggleWakeWord() {
+            if (!wakeDetector) {
+                initWakeWord();
+                setTimeout(() => {
+                    if (wakeDetector) {
+                        toggleWakeWord();
+                    }
+                }, 500);
+                return;
+            }
+            
+            wakeEnabled = !wakeEnabled;
+            const btn = document.getElementById('wakeToggleBtn');
+            const dot = document.getElementById('wakeIndicatorDot');
+            
+            if (wakeEnabled) {
+                const started = wakeDetector.start();
+                if (started) {
+                    btn.style.background = 'rgba(16,185,129,0.2)';
+                    btn.style.borderColor = '#10b981';
+                    btn.style.color = '#10b981';
+                    btn.innerHTML = '🔊 Activo <span id="wakeIndicatorDot" style="display:block; position:absolute; top:-4px; right:-4px; width:10px; height:10px; background:#10b981; border-radius:50%; animation:ping 1.5s infinite;"></span>';
+                    showWakeStatus('🎧 Escuchando... di "Hey Migo"');
+                    updateESP32ListeningStatus('🎧 Escuchando... di "Hey Migo"');
+                    console.log('✅ Escucha activa activada');
+                } else {
+                    wakeEnabled = false;
+                    btn.style.background = '';
+                    btn.style.borderColor = '';
+                    btn.style.color = '';
+                    btn.innerHTML = '🎤 Escucha <span id="wakeIndicatorDot" style="display:none; position:absolute; top:-4px; right:-4px; width:10px; height:10px; background:#10b981; border-radius:50%;"></span>';
+                    showWakeStatus('⚠️ No se pudo activar el micrófono');
+                    setTimeout(() => hideWakeStatus(), 3000);
+                }
+            } else {
+                wakeDetector.stop();
+                btn.style.background = '';
+                btn.style.borderColor = '';
+                btn.style.color = '';
+                btn.innerHTML = '🎤 Escucha <span id="wakeIndicatorDot" style="display:none; position:absolute; top:-4px; right:-4px; width:10px; height:10px; background:#10b981; border-radius:50%;"></span>';
+                hideWakeStatus();
+                updateESP32ListeningStatus('🔇 Escucha desactivada');
+                console.log('🔇 Escucha activa desactivada');
+                
+                if (isListening) {
+                    stopMic();
+                }
+            }
+        }
+
+        function showWakeStatus(text) {
+            const status = document.getElementById('wakeStatus');
+            const statusText = document.getElementById('wakeStatusText');
+            if (status && statusText) {
+                statusText.textContent = text;
+                status.style.display = 'block';
+                status.classList.add('show');
+            }
+        }
+
+        function hideWakeStatus() {
+            const status = document.getElementById('wakeStatus');
+            if (status) {
+                status.style.display = 'none';
+                status.classList.remove('show');
+            }
+            const input = document.getElementById('msgInput');
+            if (input) {
+                input.placeholder = 'Escribe un mensaje...';
+            }
+        }
+
+        function showWakeFlash() {
+            const flash = document.getElementById('wakeFlash');
+            if (!flash) return;
+            
+            if (wakeFlashTimeout) {
+                clearTimeout(wakeFlashTimeout);
+                wakeFlashTimeout = null;
+            }
+            
+            flash.classList.remove('active');
+            void flash.offsetHeight;
+            flash.classList.add('active');
+            flash.style.display = 'block';
+            
+            wakeFlashTimeout = setTimeout(() => {
+                flash.classList.remove('active');
+                flash.style.display = 'none';
+                wakeFlashTimeout = null;
+            }, 900);
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
         document.getElementById('apiKeyModal').addEventListener('click', (e) => {
             if (e.target === e.currentTarget) skipApiKey();
         });
@@ -1685,15 +2683,20 @@
             if (e.target === e.currentTarget) closeScheduleModal();
         });
 
-        // ============ INICIALIZACION ============
         document.addEventListener('DOMContentLoaded', () => {
             connect();
             loadSchedule();
             loadTasks();
             checkActive();
+            loadSavedPersonality();
+            initWakeWord();
+            checkESP32Status();
             setInterval(checkActive, 60000);
             setInterval(loadTasks, 30000);
+            setInterval(checkESP32Status, 10000);
         });
     </script>
+    
+    <script src="/static/js/wake_word.js"></script>
 </body>
 </html>
