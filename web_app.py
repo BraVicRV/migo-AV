@@ -358,16 +358,12 @@ async def get_wake_status():
 # ============================================================
 
 @app.get("/api/esp32/pairing-code")
-async def generate_pairing_code(user_id: str):
-    """
-    Genera un código de vinculación para el ESP32.
-    """
-    if not ESP32_AVAILABLE:
-        return JSONResponse({
-            "success": False,
-            "error": "ESP32 Manager no disponible"
-        }, status_code=500)
-        
+async def generate_pairing_code(request: Request):
+    # Obtener user_id de los headers o de la query string
+    user_id = request.headers.get('x-user-id')
+    if not user_id:
+        user_id = request.query_params.get('user_id')
+    
     if not user_id or user_id == "default":
         return JSONResponse({
             "success": False,
@@ -378,7 +374,7 @@ async def generate_pairing_code(user_id: str):
     return {
         "success": True,
         "code": code,
-        "expires_in": 600,  # 10 minutos
+        "expires_in": 600,
         "message": f"Código generado: {code}. Ingresa este código en tu ESP32."
     }
 

@@ -1795,7 +1795,10 @@
         // ============================================
         async function generatePairingCode() {
             try {
-                const r = await fetch('/api/esp32/pairing-code', {
+                // ✅ Asegurar que userId está definido
+                const userId = getOrCreateUserId();
+                
+                const r = await fetch('/api/esp32/pairing-code?user_id=' + userId, {
                     headers: {'x-user-id': userId}
                 });
                 const data = await r.json();
