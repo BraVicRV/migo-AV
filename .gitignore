@@ -1,9 +1,35 @@
-__pycache__/
-config/user_profile.json
-config/schedule.json
+# Crear .gitignore completo
+cat > .gitignore << 'EOF'
+# Archivos de compilación
+build/
+dist/
+*.exe
+*.spec
+*.pkg
+
+# Configuración de usuarios
+config/users/
+config/*.json
+!config/personality.json
+
+# Datos y caché
 data/
+*.db
 *.pyc
+__pycache__/
+
+# Archivos de prueba
+test_*.py
+*OLD.*
+
+# Variables de entorno
 .env
+*.env
+
+# Archivos de sistema
 .DS_Store
-*.mp3
-*.log
+Thumbs.db
+EOF
+
+git add .gitignore
+git commit -m "chore: Agregar .gitignore"
