@@ -398,6 +398,9 @@ async def verify_pairing_code(request: Request):
         data = await request.json()
         code = data.get("code", "").strip().upper()
         device_id = data.get("device", "").strip() or data.get("device_id", "").strip()
+
+        print(f"[ESP32] Pair request - code: {code}, device_id: {device_id}")
+        print(f"[ESP32] Códigos disponibles: {list(esp32_manager.pairing_codes.keys())}")
         
         if not code:
             return JSONResponse({
@@ -408,6 +411,7 @@ async def verify_pairing_code(request: Request):
         # Verificar el código
         from core.esp32_manager import esp32_manager
         user_id = esp32_manager.verify_pairing_code(code, device_id)
+        print(f"[ESP32] user_id encontrado: {user_id}")
         
         if user_id:
             # Registrar dispositivo virtualmente
