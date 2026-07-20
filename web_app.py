@@ -397,10 +397,9 @@ async def verify_pairing_code(request: Request):
     try:
         data = await request.json()
         code = data.get("code", "").strip().upper()
-        device_id = data.get("device", "").strip() or data.get("device_id", "").strip()
+        device_id = data.get("device_id", "").strip() or data.get("device", "").strip()
         
         print(f"[ESP32] Pair request - code: {code}, device_id: {device_id}")
-        print(f"[ESP32] Códigos disponibles: {list(esp32_manager.pairing_codes.keys())}")
         
         if not code:
             return JSONResponse({
@@ -410,47 +409,52 @@ async def verify_pairing_code(request: Request):
         
         # Verificar el código
         from core.esp32_manager import esp32_manager
-        user_id = esp32_manager.verify_pairing_code(code, device_id)
-        print(f"[ESP32] user_id encontrado: {user_id}")
         
-        if user_id:
-            # Registrar dispositivo virtualmente
-            if device_id and device_id not in esp32_manager.devices:
-                # Usar una clase simple sin datetime
-                class VirtualDevice:
-                    def __init__(self, device_id, user_id):
-                        self.device_id = device_id
-                        self.user_id = user_id
-                        self.authenticated = True
-                        self.websocket = None
-                        self.is_online = True
-                        self.is_playing = False
-                        self.is_recording = False
-                        self.volume = 50
-                        self.last_heartbeat = None
-                        self.connected_at = None
-                    
-                    def update_heartbeat(self):
-                        self.last_heartbeat = datetime.now()
-                    
-                    def is_online(self):
-                        return True
-                
-                esp32_manager.devices[device_id] = VirtualDevice(device_id, user_id)
-                esp32_manager.link_device_to_user(device_id, user_id)
-                print(f"[ESP32] Dispositivo virtual creado: {device_id}")
-            
-            return {
-                "success": True,
-                "user_id": user_id,
-                "message": f"Dispositivo {device_id} vinculado a {user_id}"
-            }
-        else:
+        # Verificar si el código existe
+        if code not in esp32_manager.pairing_codes:
+            print(f"[ESP32] Código {code} no encontrado")
             return JSONResponse({
                 "success": False,
-                "error": "Código inválido o expirado"
+                "error": "Código inválido"
             }, status_code=400)
-            
+        
+        # Verificar expiración
+        pairing = esp32_manager.pairing_codes[code]
+        if datetime.now() > pairing["expires_at"]:
+            del esp32_manager.pairing_codes[code]
+            return JSONResponse({
+                "success": False,
+                "error": "Código expirado"
+            }, status_code=400)
+        
+        user_id = pairing["user_id"]
+        
+        # Eliminar el código (un solo uso)
+        del esp32_manager.pairing_codes[code]
+        
+        print(f"[ESP32] Código {code} verificado para usuario {user_id}")
+        
+        # Guardar dispositivo en memoria (simple)
+        if device_id:
+            # Crear un diccionario simple en lugar de una clase
+            esp32_manager.devices[device_id] = {
+                "device_id": device_id,
+                "user_id": user_id,
+                "authenticated": True,
+                "is_online": True,
+                "is_playing": False,
+                "is_recording": False,
+                "volume": 50,
+                "connected_at": datetime.now().isoformat()
+            }
+            print(f"[ESP32] Dispositivo {device_id} vinculado a {user_id}")
+        
+        return {
+            "success": True,
+            "user_id": user_id,
+            "message": f"Dispositivo {device_id} vinculado a {user_id}"
+        }
+        
     except Exception as e:
         import traceback
         print(f"[ESP32] Error en pair: {e}")
@@ -533,34 +537,33 @@ async def get_esp32_status():
     """
     try:
         from core.esp32_manager import esp32_manager
+        
         devices = []
         for device_id, device in esp32_manager.devices.items():
-            devices.append({
-                "device_id": device_id,
-                "user_id": getattr(device, 'user_id', None),
-                "authenticated": getattr(device, 'authenticated', False),
-                "is_online": getattr(device, 'is_online', False),
-                "is_playing": getattr(device, 'is_playing', False),
-                "is_recording": getattr(device, 'is_recording', False),
-                "connected_at": str(getattr(device, 'connected_at', datetime.now()))
-            })
+            if isinstance(device, dict):
+                devices.append({
+                    "device_id": device_id,
+                    "user_id": device.get("user_id"),
+                    "authenticated": device.get("authenticated", False),
+                    "is_online": device.get("is_online", False),
+                    "is_playing": device.get("is_playing", False),
+                    "is_recording": device.get("is_recording", False),
+                    "connected_at": device.get("connected_at", "")
+                })
         
         return {
             "total_connected": len(devices),
-            "authenticated": sum(1 for d in devices if d.get('authenticated')),
+            "authenticated": sum(1 for d in devices if d.get("authenticated")),
             "devices": devices,
             "pairing_codes": len(esp32_manager.pairing_codes)
         }
     except Exception as e:
-        import traceback
         print(f"[ESP32] Error en status: {e}")
-        traceback.print_exc()
         return {
             "total_connected": 0,
             "authenticated": 0,
             "devices": [],
-            "pairing_codes": 0,
-            "error": str(e)
+            "pairing_codes": 0
         }
     
 @app.websocket("/esp32/{device_id}")
