@@ -405,15 +405,13 @@ async def verify_pairing_code(request: Request):
                 "error": "Código requerido"
             }, status_code=400)
         
-        # Verificar el código con el esp32_manager
+        # Verificar el código
         from core.esp32_manager import esp32_manager
         user_id = esp32_manager.verify_pairing_code(code, device_id)
         
         if user_id:
-            # Registrar el dispositivo aunque no esté en WebSocket
-            # Crear un dispositivo virtual
+            # Registrar dispositivo virtualmente
             if device_id and device_id not in esp32_manager.devices:
-                # Crear dispositivo virtual
                 class VirtualDevice:
                     def __init__(self, device_id, user_id):
                         self.device_id = device_id
@@ -462,7 +460,7 @@ async def esp32_voice_input(request: Request):
     try:
         data = await request.json()
         text = data.get("text", "").strip()
-        device_id = data.get("device_id", "").strip()
+        device_id = data.get("device", "").strip() or data.get("device_id", "").strip()
         
         if not text:
             return JSONResponse({
@@ -470,16 +468,18 @@ async def esp32_voice_input(request: Request):
                 "error": "Texto requerido"
             }, status_code=400)
         
-        # Obtener el user_id asociado al dispositivo
+        # Obtener el user_id del dispositivo o del cuerpo
         from core.esp32_manager import esp32_manager
-        device = esp32_manager.devices.get(device_id)
-        if not device or not device.user_id:
-            return JSONResponse({
-                "success": False,
-                "error": "Dispositivo no vinculado"
-            }, status_code=401)
         
-        user_id = device.user_id
+        # Buscar el user_id asociado al dispositivo
+        user_id = None
+        if device_id and device_id in esp32_manager.devices:
+            device = esp32_manager.devices[device_id]
+            user_id = getattr(device, 'user_id', None)
+        
+        # Si no hay user_id, usar el que viene en la petición o 'default'
+        if not user_id:
+            user_id = data.get("user_id", "default")
         
         # Procesar mensaje con AURA
         from main import AmigoVirtual
@@ -508,8 +508,7 @@ async def esp32_voice_input(request: Request):
         return {
             "success": True,
             "response": response,
-            "audio": audio_base64,
-            "emotion": aura.user_mood_history[-1] if aura.user_mood_history else None
+            "audio": audio_base64
         }
         
     except Exception as e:
@@ -522,23 +521,38 @@ async def esp32_voice_input(request: Request):
 @app.get("/api/esp32/status")
 async def get_esp32_status():
     """
-    Devuelve el estado de todos los dispositivos ESP32 conectados.
+    Devuelve el estado de los dispositivos ESP32.
     """
-    if not ESP32_AVAILABLE:
+    try:
+        from core.esp32_manager import esp32_manager
+        devices = []
+        for device_id, device in esp32_manager.devices.items():
+            devices.append({
+                "device_id": device_id,
+                "user_id": getattr(device, 'user_id', None),
+                "authenticated": getattr(device, 'authenticated', False),
+                "is_online": getattr(device, 'is_online', False),
+                "is_playing": getattr(device, 'is_playing', False),
+                "is_recording": getattr(device, 'is_recording', False),
+                "connected_at": getattr(device, 'connected_at', datetime.now()).isoformat()
+            })
+        
         return {
+            "total_connected": len(devices),
+            "authenticated": sum(1 for d in devices if d.get('authenticated')),
+            "devices": devices,
+            "pairing_codes": len(esp32_manager.pairing_codes)
+        }
+    except Exception as e:
+        print(f"[ESP32] Error en status: {e}")
+        return JSONResponse({
+            "error": str(e),
             "total_connected": 0,
             "authenticated": 0,
             "devices": [],
             "pairing_codes": 0
-        }
+        }, status_code=200)  # Siempre retornar 200 para no romper el frontend
     
-    return {
-        "total_connected": esp32_manager.get_connected_count(),
-        "authenticated": esp32_manager.get_authenticated_count(),
-        "devices": esp32_manager.get_connected_devices(),
-        "pairing_codes": len(esp32_manager.pairing_codes)
-    }
-
 @app.websocket("/esp32/{device_id}")
 async def esp32_websocket(websocket: WebSocket, device_id: str):
     """
