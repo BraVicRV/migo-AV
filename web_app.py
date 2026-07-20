@@ -359,7 +359,7 @@ async def get_wake_status():
 
 @app.get("/api/esp32/pairing-code")
 async def generate_pairing_code(request: Request):
-    # Obtener user_id de los headers o de la query string
+    """Genera un código de vinculación para el ESP32."""
     user_id = request.headers.get('x-user-id')
     if not user_id:
         user_id = request.query_params.get('user_id')
@@ -370,13 +370,129 @@ async def generate_pairing_code(request: Request):
             "error": "Usuario inválido. Inicia sesión primero."
         }, status_code=400)
     
-    code = esp32_manager.generate_pairing_code(user_id)
-    return {
-        "success": True,
-        "code": code,
-        "expires_in": 600,
-        "message": f"Código generado: {code}. Ingresa este código en tu ESP32."
-    }
+    try:
+        code = esp32_manager.generate_pairing_code(user_id)
+        return {
+            "success": True,
+            "code": code,
+            "expires_in": 600,
+            "user_id": user_id,
+            "message": f"Código generado: {code}. Ingresa este código en tu ESP32."
+        }
+    except Exception as e:
+        return JSONResponse({
+            "success": False,
+            "error": str(e)
+        }, status_code=500)
+
+# ============================================================
+# ENDPOINT PARA VERIFICAR CÓDIGO DE PAIRING (ESP32)
+# ============================================================
+
+@app.post("/api/esp32/pair")
+async def verify_pairing_code(request: Request):
+    """
+    Verifica el código de vinculación enviado por el ESP32.
+    """
+    try:
+        data = await request.json()
+        code = data.get("code", "").strip().upper()
+        device_id = data.get("device_id", "").strip()
+        
+        if not code:
+            return JSONResponse({
+                "success": False,
+                "error": "Código requerido"
+            }, status_code=400)
+        
+        # Verificar el código con el esp32_manager
+        from core.esp32_manager import esp32_manager
+        user_id = esp32_manager.verify_pairing_code(code, device_id)
+        
+        if user_id:
+            return {
+                "success": True,
+                "user_id": user_id,
+                "message": f"Dispositivo {device_id} vinculado a {user_id}"
+            }
+        else:
+            return JSONResponse({
+                "success": False,
+                "error": "Código inválido o expirado"
+            }, status_code=400)
+            
+    except Exception as e:
+        print(f"[ESP32] Error en pair: {e}")
+        return JSONResponse({
+            "success": False,
+            "error": str(e)
+        }, status_code=500)
+
+
+@app.post("/api/esp32/voice")
+async def esp32_voice_input(request: Request):
+    """
+    Recibe mensaje de voz desde el ESP32 y responde con audio.
+    """
+    try:
+        data = await request.json()
+        text = data.get("text", "").strip()
+        device_id = data.get("device_id", "").strip()
+        
+        if not text:
+            return JSONResponse({
+                "success": False,
+                "error": "Texto requerido"
+            }, status_code=400)
+        
+        # Obtener el user_id asociado al dispositivo
+        from core.esp32_manager import esp32_manager
+        device = esp32_manager.devices.get(device_id)
+        if not device or not device.user_id:
+            return JSONResponse({
+                "success": False,
+                "error": "Dispositivo no vinculado"
+            }, status_code=401)
+        
+        user_id = device.user_id
+        
+        # Procesar mensaje con AURA
+        from main import AmigoVirtual
+        aura = AmigoVirtual(user_id=user_id)
+        aura._web_mode = True
+        
+        # Procesar mensaje
+        response = await aura.chat(text)
+        
+        # Generar audio de la respuesta
+        from core.tts_service import tts_service
+        audio_base64 = None
+        try:
+            personality = aura.personality
+            voice = tts_service.get_voice_for_personality(
+                gender=personality.get("gender", "femenino")
+            )
+            audio_base64 = await tts_service.text_to_speech_base64(
+                response,
+                voice=voice,
+                rate=0.95
+            )
+        except Exception as e:
+            print(f"[ESP32] Error generando audio: {e}")
+        
+        return {
+            "success": True,
+            "response": response,
+            "audio": audio_base64,
+            "emotion": aura.user_mood_history[-1] if aura.user_mood_history else None
+        }
+        
+    except Exception as e:
+        print(f"[ESP32] Error en voice: {e}")
+        return JSONResponse({
+            "success": False,
+            "error": str(e)
+        }, status_code=500)
 
 @app.get("/api/esp32/status")
 async def get_esp32_status():
