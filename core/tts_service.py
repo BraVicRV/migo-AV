@@ -356,6 +356,34 @@ class TTSService:
         if audio_bytes:
             return base64.b64encode(audio_bytes).decode("utf-8")
         return None
+
+    async def text_to_speech_pcm_base64(
+            self,
+            text: str,
+            voice: Optional[str] = None,
+            rate: float = 1.0,
+            sample_rate: int = 16000
+        ) -> Optional[str]:
+            """
+            Genera audio y lo convierte a PCM crudo (mono, 16-bit, sample_rate Hz)
+            en base64. Pensado para el ESP32, que no puede decodificar MP3 y
+            necesita muestras sin comprimir para alimentar el A2DP source.
+
+            Requiere ffmpeg instalado en el sistema (pydub lo usa por debajo).
+            """
+            mp3_bytes = await self.text_to_speech(text, voice, rate, use_cache=True)
+            if not mp3_bytes:
+                return None
+            try:
+                from pydub import AudioSegment
+                import io
+                audio = AudioSegment.from_file(io.BytesIO(mp3_bytes), format="mp3")
+                audio = audio.set_frame_rate(sample_rate).set_channels(1).set_sample_width(2)
+                pcm_bytes = audio.raw_data
+                return base64.b64encode(pcm_bytes).decode("utf-8")
+            except Exception as e:
+                print(f"[TTS] ❌ Error convirtiendo a PCM para ESP32: {e}")
+                return None        
     
     async def text_to_speech_base64_with_voice(
         self, 

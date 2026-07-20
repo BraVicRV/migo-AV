@@ -435,19 +435,12 @@ async def verify_pairing_code(request: Request):
         print(f"[ESP32] Código {code} verificado para usuario {user_id}")
         
         # Guardar dispositivo en memoria (simple)
+        # Autorizar el dispositivo (objeto ESP32Device real, no un dict suelto).
+        # OJO: esto NO lo marca "online" todavía -- online real solo ocurre
+        # cuando el ESP32 abre el WebSocket /esp32/{device_id} y manda "hello".
         if device_id:
-            # Crear un diccionario simple en lugar de una clase
-            esp32_manager.devices[device_id] = {
-                "device_id": device_id,
-                "user_id": user_id,
-                "authenticated": True,
-                "is_online": True,
-                "is_playing": False,
-                "is_recording": False,
-                "volume": 50,
-                "connected_at": datetime.now().isoformat()
-            }
-            print(f"[ESP32] Dispositivo {device_id} vinculado a {user_id}")
+            esp32_manager.authorize_device(device_id, user_id)
+            print(f"[ESP32] Dispositivo {device_id} autorizado para {user_id}")
         
         return {
             "success": True,
@@ -509,7 +502,7 @@ async def esp32_voice_input(request: Request):
             voice = tts_service.get_voice_for_personality(
                 gender=personality.get("gender", "femenino")
             )
-            audio_base64 = await tts_service.text_to_speech_base64(
+            audio_base64 = await tts_service.text_to_speech_pcm_base64(
                 response,
                 voice=voice,
                 rate=0.95
@@ -537,19 +530,8 @@ async def get_esp32_status():
     """
     try:
         from core.esp32_manager import esp32_manager
-        
-        devices = []
-        for device_id, device in esp32_manager.devices.items():
-            if isinstance(device, dict):
-                devices.append({
-                    "device_id": device_id,
-                    "user_id": device.get("user_id"),
-                    "authenticated": device.get("authenticated", False),
-                    "is_online": device.get("is_online", False),
-                    "is_playing": device.get("is_playing", False),
-                    "is_recording": device.get("is_recording", False),
-                    "connected_at": device.get("connected_at", "")
-                })
+                
+        devices = esp32_manager.get_connected_devices()
         
         return {
             "total_connected": len(devices),
@@ -588,6 +570,23 @@ async def esp32_websocket(websocket: WebSocket, device_id: str):
             
             # Tipo de mensaje
             msg_type = data.get("type", "unknown")
+
+            if msg_type == "hello":
+                # El ESP32 ya se autorizó por HTTP (/api/esp32/pair) y ahora
+                # solo abre el canal en vivo para recibir audio empujado.
+                if device.authenticated and device.user_id:
+                    device.update_heartbeat()
+                    await websocket.send_json({
+                        "type": "hello_ack",
+                        "user_id": device.user_id
+                    })
+                    print(f"[ESP32] {device_id} conectado en vivo como {device.user_id}")
+                else:
+                    await websocket.send_json({
+                        "type": "hello_error",
+                        "error": "Dispositivo no autorizado. Usa 'pair' con el código primero."
+                    })
+                continue            
             
             if msg_type == "heartbeat":
                 # Actualizar heartbeat
@@ -627,7 +626,7 @@ async def esp32_websocket(websocket: WebSocket, device_id: str):
                             voice = tts_service.get_voice_for_personality(
                                 gender=personality.get("gender", "femenino")
                             )
-                            audio_base64 = await tts_service.text_to_speech_base64(
+                            audio_base64 = await tts_service.text_to_speech_pcm_base64(
                                 greeting,
                                 voice=voice,
                                 rate=0.95
@@ -681,7 +680,7 @@ async def esp32_websocket(websocket: WebSocket, device_id: str):
                         voice = tts_service.get_voice_for_personality(
                             gender=personality.get("gender", "femenino")
                         )
-                        audio_base64 = await tts_service.text_to_speech_base64(
+                        audio_base64 = await tts_service.text_to_speech_pcm_base64(
                             response,
                             voice=voice,
                             rate=0.95
@@ -975,7 +974,22 @@ async def websocket_endpoint(websocket: WebSocket, user_id: str):
                         emotion = {**emotion, "trend": aura.emotions._compute_trend()}
 
                     # Generar audio de la respuesta
+                    # Generar audio de la respuesta (para el navegador, en MP3)
                     audio_base64 = await generate_audio_for_user(user_id, response)
+
+                    # Empujar la respuesta también al parlante ESP32 vinculado,
+                    # si hay uno conectado por WebSocket ahora mismo.
+                    try:
+                        esp32_device = esp32_manager.get_device_by_user(user_id)
+                        if esp32_device:
+                            esp32_gender = aura.personality.get("gender", "femenino")
+                            esp32_voice = tts_service.get_voice_for_personality(gender=esp32_gender)
+                            esp32_audio = await tts_service.text_to_speech_pcm_base64(
+                                response, voice=esp32_voice, rate=0.95
+                            )
+                            await esp32_manager.send_proactive_message(user_id, response, esp32_audio)
+                    except Exception as e:
+                        print(f"[ESP32] Error empujando audio al parlante: {e}")
 
                     # Enviar respuesta
                     await manager.send_message({
