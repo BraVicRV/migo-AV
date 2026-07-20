@@ -392,12 +392,12 @@ async def generate_pairing_code(request: Request):
 @app.post("/api/esp32/pair")
 async def verify_pairing_code(request: Request):
     """
-    Verifica el código de vinculación enviado por el ESP32.
+    Verifica el código de vinculación enviado por el ESP32 vía HTTP.
     """
     try:
         data = await request.json()
         code = data.get("code", "").strip().upper()
-        device_id = data.get("device_id", "").strip()
+        device_id = data.get("device", "").strip() or data.get("device_id", "").strip()
         
         if not code:
             return JSONResponse({
@@ -410,6 +410,32 @@ async def verify_pairing_code(request: Request):
         user_id = esp32_manager.verify_pairing_code(code, device_id)
         
         if user_id:
+            # Registrar el dispositivo aunque no esté en WebSocket
+            # Crear un dispositivo virtual
+            if device_id and device_id not in esp32_manager.devices:
+                # Crear dispositivo virtual
+                class VirtualDevice:
+                    def __init__(self, device_id, user_id):
+                        self.device_id = device_id
+                        self.user_id = user_id
+                        self.authenticated = True
+                        self.websocket = None
+                        self.last_heartbeat = datetime.now()
+                        self.is_online = True
+                        self.connected_at = datetime.now()
+                        self.is_playing = False
+                        self.is_recording = False
+                        self.volume = 50
+                    
+                    def update_heartbeat(self):
+                        self.last_heartbeat = datetime.now()
+                    
+                    def is_online(self):
+                        return True
+                
+                esp32_manager.devices[device_id] = VirtualDevice(device_id, user_id)
+                esp32_manager.link_device_to_user(device_id, user_id)
+            
             return {
                 "success": True,
                 "user_id": user_id,
@@ -427,7 +453,6 @@ async def verify_pairing_code(request: Request):
             "success": False,
             "error": str(e)
         }, status_code=500)
-
 
 @app.post("/api/esp32/voice")
 async def esp32_voice_input(request: Request):
